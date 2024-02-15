@@ -1,6 +1,4 @@
-const dotenv = require('dotenv')
-
-dotenv.config()
+require('dotenv').config({ path: ['.env.local', '.env'] })
 
 const token = process.env.DISCORD_TOKEN
 
