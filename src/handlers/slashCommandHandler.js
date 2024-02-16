@@ -5,6 +5,7 @@ const table = new Ascii().setHeading('Slash Commands', 'Status')
 
 async function loadSlashCommands(client) {
   await client.commands.clear()
+  await client.subCommands.clear()
 
   const commandsList = []
 
@@ -12,6 +13,12 @@ async function loadSlashCommands(client) {
 
   files.forEach((file) => {
     const command = require(file)
+
+    if (command.subCommand) {
+      client.subCommands.set(command.subCommand, command)
+      table.addRow(command.subCommand, '🟩')
+      return
+    }
 
     client.commands.set(command.data.name, command)
 
