@@ -1,4 +1,5 @@
 const { Events } = require('discord.js')
+const { developersId } = require('../config')
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -15,7 +16,7 @@ module.exports = {
       })
     }
 
-    if (command.developer && interaction.user.id !== '507910496717111306') {
+    if (command.developer && !developersId.includes(interaction.user.id)) {
       return interaction.reply({
         content: 'Este comando es solo para el developer.',
         ephemeral: true,

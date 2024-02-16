@@ -12,7 +12,18 @@ module.exports = {
         .addUserOption((option) =>
           option
             .setName('user')
-            .setDescription('User to see their avatar')
+            .setDescription('User to view their avatar')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('info')
+        .setDescription('Shows detailed information about a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to view their information')
             .setRequired(false),
         ),
     ),

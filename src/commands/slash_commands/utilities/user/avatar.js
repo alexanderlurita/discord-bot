@@ -4,6 +4,7 @@ const {
   ButtonStyle,
   EmbedBuilder,
 } = require('discord.js')
+const { colors } = require('../../../../constants/colors')
 
 module.exports = {
   subCommand: 'user.avatar',
@@ -15,8 +16,8 @@ module.exports = {
       .displayAvatarURL({ dynamic: true, size: 2048 })
       .replace('webp', 'png')
 
-    const embed = new EmbedBuilder()
-      .setColor('#fe7d1f')
+    const embedBuilder = new EmbedBuilder()
+      .setColor(colors.warning)
       .setTitle(`Avatar de ${member.user.globalName || member.user.username}`)
       .setImage(avatar)
 
@@ -27,6 +28,6 @@ module.exports = {
         .setURL(avatar),
     ])
 
-    await interaction.reply({ embeds: [embed], components: [buttons] })
+    await interaction.reply({ embeds: [embedBuilder], components: [buttons] })
   },
 }
