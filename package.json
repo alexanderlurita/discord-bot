@@ -15,7 +15,8 @@
     "ascii-table": "0.0.9",
     "discord.js": "14.14.1",
     "dotenv": "16.4.4",
-    "glob": "10.3.10"
+    "glob": "10.3.10",
+    "humanize-duration": "3.31.0"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

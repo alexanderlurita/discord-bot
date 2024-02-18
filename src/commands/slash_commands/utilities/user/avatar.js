@@ -8,7 +8,6 @@ const { colors } = require('../../../../constants/colors')
 
 module.exports = {
   subCommand: 'user.avatar',
-
   async execute(interaction) {
     const member = interaction.options.getMember('user') || interaction.member
 

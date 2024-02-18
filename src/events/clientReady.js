@@ -1,5 +1,5 @@
 const { Events } = require('discord.js')
-const { loadSlashCommands } = require('../handlers/slashCommandHandler')
+const { loadSlashCommands } = require('../handlers/slashCommands')
 const { updatePresence } = require('../utils/updatePresence')
 
 module.exports = {
