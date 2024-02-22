@@ -7,7 +7,7 @@ const {
 const { Guilds, GuildMembers, GuildMessages, MessageContent } =
   GatewayIntentBits
 const { User, Message, GuildMember, ThreadMember } = Partials
-const { token } = require('./config')
+const { TOKEN } = require('./config')
 const { loadEvents } = require('./handlers/events')
 
 const client = new Client({
@@ -22,4 +22,4 @@ client.cooldowns = new Collection()
 
 loadEvents(client)
 
-client.login(token)
+client.login(TOKEN)

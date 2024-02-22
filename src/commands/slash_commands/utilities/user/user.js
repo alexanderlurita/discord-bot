@@ -18,6 +18,17 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('banner')
+        .setDescription("Shows a user's banner")
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to view their banner')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('info')
         .setDescription('Shows detailed information about a user')
         .addUserOption((option) =>

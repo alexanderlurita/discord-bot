@@ -1,13 +1,21 @@
 require('dotenv').config({ path: ['.env.local', '.env'] })
 
-const token = process.env.DISCORD_TOKEN
+const TOKEN = process.env.DISCORD_TOKEN
 
-const devBotId = '1207676300567781446'
-const prodBotId = '1059278935755604050'
+const DEV_BOT_ID = '1207676300567781446'
+const PROD_BOT_ID = '1059278935755604050'
 
-const botId = process.env.NODE_ENV === 'development' ? devBotId : prodBotId
+const BOT_ID = process.env.NODE_ENV === 'development' ? DEV_BOT_ID : PROD_BOT_ID
 
-const devServerId = '1207739206382915594'
-const developersId = ['507910496717111306']
+const DEV_SERVER_ID = '1207739206382915594'
+const DEVELOPERS_ID = ['507910496717111306']
 
-module.exports = { botId, devServerId, developersId, token }
+const DISCORD_API_URL = 'https://discord.com/api'
+
+module.exports = {
+  BOT_ID,
+  DEV_SERVER_ID,
+  DEVELOPERS_ID,
+  TOKEN,
+  DISCORD_API_URL,
+}

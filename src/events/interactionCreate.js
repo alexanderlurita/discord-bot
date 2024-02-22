@@ -1,6 +1,6 @@
 const { Events } = require('discord.js')
 const hd = require('humanize-duration')
-const { developersId } = require('../config')
+const { DEVELOPERS_ID } = require('../config')
 const { trackCooldowns } = require('../handlers/cooldowns')
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
       })
     }
 
-    if (command.developer && !developersId.includes(interaction.user.id)) {
+    if (command.developer && !DEVELOPERS_ID.includes(interaction.user.id)) {
       return interaction.reply({
         content: 'Este comando es solo para el developer.',
         ephemeral: true,
