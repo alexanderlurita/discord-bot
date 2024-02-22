@@ -1,18 +1,23 @@
-function trackCooldowns(interaction, command) {
+function trackCooldowns({ interaction, commandType, commandOrSubcommand }) {
   const { cooldowns } = interaction.client
-  const { name } = command.data
+  const commandName =
+    commandType === 'subCommand'
+      ? commandOrSubcommand.subCommand
+      : commandOrSubcommand.data.name
+
   const userId = interaction.user.id
 
-  if (!command.cooldown) return { onCooldown: false }
+  if (!commandOrSubcommand.cooldown) return { onCooldown: false }
 
-  if (!cooldowns.has(name)) {
-    cooldowns.set(name, new Map())
+  if (!cooldowns.has(commandName)) {
+    cooldowns.set(commandName, new Map())
   }
 
   const now = Date.now()
-  const timestamps = cooldowns.get(name)
+  const timestamps = cooldowns.get(commandName)
   const defaultCooldownDuration = 0
-  const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000
+  const cooldownAmount =
+    (commandOrSubcommand.cooldown ?? defaultCooldownDuration) * 1000
 
   if (timestamps.has(userId)) {
     const expirationTime = timestamps.get(userId) + cooldownAmount
