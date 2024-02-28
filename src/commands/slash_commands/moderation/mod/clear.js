@@ -1,18 +1,19 @@
 const { PermissionFlagsBits } = require('discord.js')
-const { errorMessages } = require('../../../../constants/error_messages')
+const { errorMessages } = require('../../../../constants/errorMessages')
 
 module.exports = {
   subCommand: 'mod.clear',
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true })
+
     const quantity = interaction.options.getInteger('quantity')
     const user = interaction.options.getUser('user')
 
     if (
       !interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)
     ) {
-      return await interaction.reply({
+      return await interaction.editReply({
         content: `${errorMessages.insufficientPermissions}\nRequire: \`MANAGE_MESSAGES\``,
-        ephemeral: true,
       })
     }
 
@@ -21,18 +22,16 @@ module.exports = {
         PermissionFlagsBits.ManageMessages,
       )
     ) {
-      return await interaction.reply({
+      return await interaction.editReply({
         content: `${errorMessages.botInsufficientPermissions}\nRequire: \`MANAGE_MESSAGES\``,
-        ephemeral: true,
       })
     }
 
     const messages = await interaction.channel.messages.fetch({ limit: 99 })
 
     if (messages.size === 0) {
-      return await interaction.reply({
+      return await interaction.editReply({
         content: 'No hay mensajes en este canal para eliminar',
-        ephemeral: true,
       })
     }
 
@@ -41,15 +40,12 @@ module.exports = {
       : messages.first(quantity)
 
     if (messagesToDelete.length === 0) {
-      return await interaction.reply({
+      return await interaction.editReply({
         content: `No se encontraron mensajes para borrar${
           user ? ' de ese usuario' : ''
         }`,
-        ephemeral: true,
       })
     }
-
-    await interaction.deferReply({ ephemeral: true })
 
     try {
       await interaction.channel.bulkDelete(messagesToDelete, true)
@@ -57,7 +53,6 @@ module.exports = {
       console.error(err)
       return await interaction.editReply({
         content: 'Ocurrió un error al intentar borrar mensajes',
-        ephemeral: true,
       })
     }
 
