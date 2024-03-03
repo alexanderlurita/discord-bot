@@ -4,4 +4,4 @@ package-lock.json
 .env
 .env.local
 
-src/invite
+*.txt

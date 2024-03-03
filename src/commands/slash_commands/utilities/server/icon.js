@@ -7,24 +7,26 @@ const {
 const { colors } = require('../../../../constants/colors')
 
 module.exports = {
-  subCommand: 'user.avatar',
+  subCommand: 'server.icon',
   async execute(interaction) {
-    const member = interaction.options.getMember('user') || interaction.member
+    const icon = interaction.guild
+      .iconURL({ dynamic: true, size: 2048 })
+      ?.replace('webp', 'png')
 
-    const avatar = member.user
-      .avatarURL({ dynamic: true, size: 2048 })
-      .replace('webp', 'png')
+    if (!icon) {
+      return await interaction.reply('El servidor no tiene un ícono')
+    }
 
     const embedBuilder = new EmbedBuilder()
       .setColor(colors.warning)
-      .setTitle(`Avatar de ${member.user.globalName || member.user.username}`)
-      .setImage(avatar)
+      .setTitle(`Ícono de ${interaction.guild.name}`)
+      .setImage(icon)
 
     const buttons = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
         .setLabel('Ver en navegador')
         .setStyle(ButtonStyle.Link)
-        .setURL(avatar),
+        .setURL(icon),
     ])
 
     await interaction.reply({ embeds: [embedBuilder], components: [buttons] })
