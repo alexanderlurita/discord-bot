@@ -6,7 +6,7 @@ const { colors } = require('../../../constants/colors')
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('8ball')
-    .setDescription("Ask the PAL lobby's magic ball")
+    .setDescription('Ask the magic ball')
     .setDMPermission(false)
     .addStringOption((option) =>
       option
