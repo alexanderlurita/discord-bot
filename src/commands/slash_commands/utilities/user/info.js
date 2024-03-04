@@ -69,7 +69,7 @@ module.exports = {
       .setTitle(embedData.title)
       .setURL(embedData.titleURL)
       .setThumbnail(embedData.thumbnail)
-      .addFields(...embedData.fields)
+      .addFields(embedData.fields)
       .setFooter(embedData.footer)
 
     await interaction.reply({ embeds: [embedBuilder] })

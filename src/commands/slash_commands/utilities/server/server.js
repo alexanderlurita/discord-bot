@@ -7,5 +7,10 @@ module.exports = {
     .setDMPermission(false)
     .addSubcommand((subcommand) =>
       subcommand.setName('icon').setDescription("Shows the server's icon"),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('info')
+        .setDescription('Shows detailed information about the server'),
     ),
 }
