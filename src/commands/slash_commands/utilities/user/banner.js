@@ -4,7 +4,6 @@ const {
   ButtonStyle,
   EmbedBuilder,
 } = require('discord.js')
-const { getUserData } = require('../../../../services/fetchUserData')
 const { colors } = require('../../../../constants/colors')
 
 module.exports = {
@@ -12,19 +11,7 @@ module.exports = {
   async execute(interaction) {
     const member = interaction.options.getMember('user') || interaction.member
 
-    let result
-
-    try {
-      result = await getUserData({ userId: member.user.id })
-    } catch (err) {
-      console.error(err)
-      return await interaction.reply({
-        content: 'Error al obtener los datos del usuario',
-        ephemeral: true,
-      })
-    }
-
-    const { banner } = result
+    const { banner } = await member.user.fetch()
 
     if (!banner) {
       return await interaction.reply(

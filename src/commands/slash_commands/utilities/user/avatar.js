@@ -12,7 +12,7 @@ module.exports = {
     const member = interaction.options.getMember('user') || interaction.member
 
     const avatar = member.user
-      .avatarURL({ dynamic: true, size: 2048 })
+      .displayAvatarURL({ dynamic: true, size: 2048 })
       .replace('webp', 'png')
 
     const embedBuilder = new EmbedBuilder()

@@ -102,7 +102,7 @@ module.exports = {
       ],
       footer: {
         text: client.user.username,
-        iconURL: client.user.avatarURL(),
+        iconURL: client.user.displayAvatarURL(),
       },
     }
 
