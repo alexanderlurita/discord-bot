@@ -26,6 +26,23 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('kick')
+        .setDescription('Kick out a member')
+        .addUserOption((option) =>
+          option
+            .setName('member')
+            .setDescription('Member to kick out')
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('reason')
+            .setDescription('Reason for kick out')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('timeout')
         .setDescription('Timeout a member')
         .addUserOption((option) =>
