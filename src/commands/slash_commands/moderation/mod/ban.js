@@ -3,7 +3,7 @@ const { errorMessages } = require('../../../../constants/errorMessages')
 
 async function handleBan({ interaction, user, member, reason }) {
   try {
-    if (!member) {
+    if (user) {
       await interaction.guild.members.ban(user, { reason })
       await interaction.reply(
         `${user.toString()} ha sido baneado\nRazón: ${reason}`,
@@ -11,7 +11,7 @@ async function handleBan({ interaction, user, member, reason }) {
       return
     }
 
-    if (member.bannable) {
+    if (member && member.bannable) {
       await member.ban({ reason })
       await interaction.reply(
         `${member.toString()} ha sido baneado\nRazón: ${reason}`,

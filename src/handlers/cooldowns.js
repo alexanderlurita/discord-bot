@@ -1,26 +1,34 @@
-function trackCooldowns({ interaction, commandType, commandOrSubcommand }) {
+function trackCooldowns({ interaction, commandCategory, commandData }) {
   const { cooldowns } = interaction.client
+  const serverId = interaction.guild.id
   const commandName =
-    commandType === 'subCommand'
-      ? commandOrSubcommand.subCommand
-      : commandOrSubcommand.data.name
+    commandCategory === 'subCommand'
+      ? commandData.subCommand
+      : commandData.data.name
 
   const userId = interaction.user.id
 
-  if (!commandOrSubcommand.cooldown) return { onCooldown: false }
+  if (!commandData.cooldown) return { onCooldown: false }
 
-  if (!cooldowns.has(commandName)) {
-    cooldowns.set(commandName, new Map())
+  if (!cooldowns.has(serverId)) {
+    cooldowns.set(serverId, new Map())
   }
 
+  const serverCooldowns = cooldowns.get(serverId)
+
+  if (!serverCooldowns.has(commandName)) {
+    serverCooldowns.set(commandName, new Map())
+  }
+
+  const commandCooldowns = serverCooldowns.get(commandName)
+
   const now = Date.now()
-  const timestamps = cooldowns.get(commandName)
   const defaultCooldownDuration = 0
   const cooldownAmount =
-    (commandOrSubcommand.cooldown ?? defaultCooldownDuration) * 1000
+    (commandData.cooldown ?? defaultCooldownDuration) * 1000
 
-  if (timestamps.has(userId)) {
-    const expirationTime = timestamps.get(userId) + cooldownAmount
+  if (commandCooldowns.has(userId)) {
+    const expirationTime = commandCooldowns.get(userId) + cooldownAmount
 
     if (now < expirationTime) {
       const remainingTime = expirationTime - now
@@ -31,8 +39,8 @@ function trackCooldowns({ interaction, commandType, commandOrSubcommand }) {
     }
   }
 
-  timestamps.set(userId, now)
-  setTimeout(() => timestamps.delete(userId), cooldownAmount)
+  commandCooldowns.set(userId, now)
+  setTimeout(() => commandCooldowns.delete(userId), cooldownAmount)
 
   return { onCooldown: false }
 }

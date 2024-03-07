@@ -40,8 +40,8 @@ module.exports = {
 
     const { onCooldown, remainingTime } = trackCooldowns({
       interaction,
-      commandType: subCommand ? 'subCommand' : 'command',
-      commandOrSubcommand: subCommand || command,
+      commandCategory: subCommand ? 'subCommand' : 'command',
+      commandData: subCommand || command,
     })
 
     if (onCooldown) {
