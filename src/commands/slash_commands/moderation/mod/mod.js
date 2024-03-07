@@ -7,6 +7,23 @@ module.exports = {
     .setDMPermission(false)
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('ban')
+        .setDescription('Ban a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to ban')
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('reason')
+            .setDescription('Reason for the ban')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('clear')
         .setDescription('Delete a quantity of messages in a channel')
         .addIntegerOption((option) =>
