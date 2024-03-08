@@ -15,14 +15,18 @@ module.exports = {
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
       return interaction.reply({
-        content: `${errorMessages.insufficientPermissions}.\nRequiere: \`BAN_MEMBERS\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`BAN_MEMBERS\``,
         ephemeral: true,
       })
     }
 
-    if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
+    if (
+      !interaction.guild.members.me.permissions.has(
+        PermissionFlagsBits.BanMembers,
+      )
+    ) {
       return await interaction.reply({
-        content: `${errorMessages.botInsufficientPermissions}.\nRequiere: \`BAN_MEMBERS\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`BAN_MEMBERS\``,
         ephemeral: true,
       })
     }

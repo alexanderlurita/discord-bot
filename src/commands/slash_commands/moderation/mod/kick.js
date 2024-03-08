@@ -29,42 +29,46 @@ module.exports = {
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
       return await interaction.reply({
-        content: `${errorMessages.insufficientPermissions}.\nRequiere: \`KICK_MEMBERS\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`KICK_MEMBERS\``,
         ephemeral: true,
       })
     }
 
-    if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
+    if (
+      !interaction.guild.members.me.permissions.has(
+        PermissionFlagsBits.KickMembers,
+      )
+    ) {
       return await interaction.reply({
-        content: `${errorMessages.botInsufficientPermissions}.\nRequiere: \`KICK_MEMBERS\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`KICK_MEMBERS\``,
         ephemeral: true,
       })
     }
 
     if (!member) {
       return await interaction.reply({
-        content: 'El usuario no existe en este servidor',
+        content: errorMessages.userNotInServer,
         ephemeral: true,
       })
     }
 
     if (member.user.id === interaction.user.id) {
       return await interaction.reply({
-        content: 'No puedes expulsarte a ti mismo',
+        content: errorMessages.cannotSelfAction('expulsarte'),
         ephemeral: true,
       })
     }
 
     if (member.user.id === client.user.id) {
       return await interaction.reply({
-        content: 'No puedes usar eso contra mí',
+        content: errorMessages.cannotUseAgainst,
         ephemeral: true,
       })
     }
 
     if (member.permissions.has(PermissionFlagsBits.Administrator)) {
       return await interaction.reply({
-        content: 'El usuario es administrador, no puedo hacer eso',
+        content: errorMessages.adminUserCannot,
         ephemeral: true,
       })
     }
@@ -85,16 +89,14 @@ module.exports = {
 
     if (!onlyEveryoneRole && memberRolePosition >= executorRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedes expulsar al usuario porque tiene un rango igual/superior al tuyo',
+        content: errorMessages.cannotPerformRoleAction('expulsar'),
         ephemeral: true,
       })
     }
 
     if (memberRolePosition >= botRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedo expulsar al usuario porque tiene un rango igual/superior al mío',
+        content: errorMessages.cannotPerformRoleActionByBot('expulsar'),
         ephemeral: true,
       })
     }

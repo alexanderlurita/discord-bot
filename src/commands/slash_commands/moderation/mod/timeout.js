@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js')
+const { PermissionFlagsBits, bold } = require('discord.js')
 const ms = require('ms')
 const hd = require('humanize-duration')
 
@@ -28,14 +28,18 @@ async function handleTimeout({ interaction, member, duration, reason }) {
     if (member.isCommunicationDisabled()) {
       await member.timeout(msDuration, reason)
       await interaction.reply(
-        `El aislamiento de **${member.user.globalName}** ha sido actualizado a **${formattedDuration}**\nRazón: ${reason}`,
+        `El aislamiento de ${bold(
+          member.user.globalName,
+        )} ha sido actualizado a ${bold(formattedDuration)}.\nRazón: ${reason}`,
       )
       return
     }
 
     await member.timeout(msDuration, reason)
     await interaction.reply(
-      `**${member.user.globalName}** ha sido aislado por **${formattedDuration}**\nRazón: ${reason}`,
+      `${bold(member.user.globalName)} ha sido aislado por ${bold(
+        formattedDuration,
+      )}.\nRazón: ${reason}`,
     )
   } catch (err) {
     console.error(err)
@@ -54,7 +58,7 @@ module.exports = {
       !interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)
     ) {
       return await interaction.reply({
-        content: `${errorMessages.insufficientPermissions}.\nRequiere: \`MODERATE_MEMBERS\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`MODERATE_MEMBERS\``,
         ephemeral: true,
       })
     }
@@ -65,42 +69,42 @@ module.exports = {
       )
     ) {
       return await interaction.reply({
-        content: `${errorMessages.botInsufficientPermissions}.\nRequiere: \`MODERATE_MEMBERS\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`MODERATE_MEMBERS\``,
         ephemeral: true,
       })
     }
 
     if (!member) {
       return await interaction.reply({
-        content: 'El usuario no existe en este servidor',
+        content: errorMessages.userNotInServer,
         ephemeral: true,
       })
     }
 
     if (member.user.id === interaction.user.id) {
       return await interaction.reply({
-        content: 'No puedes aislarte a ti mismo',
+        content: errorMessages.cannotSelfAction('aislarte'),
         ephemeral: true,
       })
     }
 
     if (member.user.id === client.user.id) {
       return await interaction.reply({
-        content: 'No puedes usar eso contra mí',
+        content: errorMessages.cannotUseAgainst,
         ephemeral: true,
       })
     }
 
     if (member.user.bot) {
       return await interaction.reply({
-        content: 'No puedes aislar a un bot',
+        content: errorMessages.cannotPerformActionOnBot('aislar'),
         ephemeral: true,
       })
     }
 
     if (member.permissions.has(PermissionFlagsBits.Administrator)) {
       return await interaction.reply({
-        content: 'El usuario es administrador, no puedo hacer eso',
+        content: errorMessages.adminUserCannot,
         ephemeral: true,
       })
     }
@@ -121,16 +125,14 @@ module.exports = {
 
     if (!onlyEveryoneRole && memberRolePosition >= executorRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedes aislar al usuario porque tiene un rango igual/superior al tuyo',
+        content: errorMessages.cannotPerformRoleAction('aislar'),
         ephemeral: true,
       })
     }
 
     if (memberRolePosition >= botRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedo aislar al usuario porque tiene un rango igual/superior al mío',
+        content: errorMessages.cannotPerformRoleActionByBot('aislar'),
         ephemeral: true,
       })
     }

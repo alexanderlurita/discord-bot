@@ -13,7 +13,7 @@ module.exports = {
       !interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)
     ) {
       return await interaction.editReply({
-        content: `${errorMessages.insufficientPermissions}\nRequire: \`MANAGE_MESSAGES\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`MANAGE_MESSAGES\``,
       })
     }
 
@@ -23,7 +23,7 @@ module.exports = {
       )
     ) {
       return await interaction.editReply({
-        content: `${errorMessages.botInsufficientPermissions}\nRequire: \`MANAGE_MESSAGES\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`MANAGE_MESSAGES\``,
       })
     }
 

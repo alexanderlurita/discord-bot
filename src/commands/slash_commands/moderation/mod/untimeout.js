@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js')
+const { PermissionFlagsBits, bold } = require('discord.js')
 const { errorMessages } = require('../../../../constants/errorMessages')
 
 async function handleUntimeout({ interaction, member, reason }) {
@@ -6,11 +6,11 @@ async function handleUntimeout({ interaction, member, reason }) {
     if (member.isCommunicationDisabled()) {
       await member.timeout(null, reason)
       await interaction.reply(
-        `El aislamiento de **${member.user.globalName}** ha sido removido`,
+        `El aislamiento de ${bold(member.user.globalName)} ha sido removido`,
       )
     } else {
       return interaction.reply(
-        `**${member.user.globalName}** no se encuentra aislado`,
+        `${bold(member.user.globalName)} no se encuentra aislado`,
       )
     }
   } catch (err) {
@@ -29,7 +29,7 @@ module.exports = {
       !interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)
     ) {
       return await interaction.reply({
-        content: `${errorMessages.insufficientPermissions}.\nRequiere: \`MODERATE_MEMBERS\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`MODERATE_MEMBERS\``,
         ephemeral: true,
       })
     }
@@ -40,42 +40,42 @@ module.exports = {
       )
     ) {
       return await interaction.reply({
-        content: `${errorMessages.botInsufficientPermissions}.\nRequiere: \`MODERATE_MEMBERS\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`MODERATE_MEMBERS\``,
         ephemeral: true,
       })
     }
 
     if (!member) {
       return await interaction.reply({
-        content: 'El usuario no existe en este servidor',
+        content: errorMessages.userNotInServer,
         ephemeral: true,
       })
     }
 
     if (member.user.id === interaction.user.id) {
       return await interaction.reply({
-        content: 'No puedes desaislarte a ti mismo',
+        content: errorMessages.cannotSelfAction('desaislarte'),
         ephemeral: true,
       })
     }
 
     if (member.user.id === client.user.id) {
       return await interaction.reply({
-        content: 'No puedes usar eso contra mí',
+        content: errorMessages.cannotUseAgainst,
         ephemeral: true,
       })
     }
 
     if (member.user.bot) {
       return await interaction.reply({
-        content: 'No puedes desaislar a un bot',
+        content: errorMessages.cannotPerformActionOnBot('desaislar'),
         ephemeral: true,
       })
     }
 
     if (member.permissions.has(PermissionFlagsBits.Administrator)) {
       return await interaction.reply({
-        content: 'El usuario es administrador, no puedo hacer eso',
+        content: errorMessages.adminUserCannot,
         ephemeral: true,
       })
     }
@@ -96,16 +96,14 @@ module.exports = {
 
     if (!onlyEveryoneRole && memberRolePosition >= executorRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedes desaislar al usuario porque tiene un rango igual/superior al tuyo',
+        content: errorMessages.cannotPerformRoleAction('desaislar'),
         ephemeral: true,
       })
     }
 
     if (memberRolePosition >= botRolePosition) {
       return await interaction.reply({
-        content:
-          'No puedo desaislar al usuario porque tiene un rango igual/superior al mío.',
+        content: errorMessages.cannotPerformRoleActionByBot('desaislar'),
         ephemeral: true,
       })
     }

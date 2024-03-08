@@ -37,14 +37,18 @@ module.exports = {
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
       return await interaction.reply({
-        content: `${errorMessages.insufficientPermissions}.\nRequiere: \`BAN_MEMBERS\``,
+        content: `${errorMessages.insufficientPermissions}\nRequiere: \`BAN_MEMBERS\``,
         ephemeral: true,
       })
     }
 
-    if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
+    if (
+      !interaction.guild.members.me.permissions.has(
+        PermissionFlagsBits.BanMembers,
+      )
+    ) {
       return await interaction.reply({
-        content: `${errorMessages.botInsufficientPermissions}.\nRequiere: \`BAN_MEMBERS\``,
+        content: `${errorMessages.botInsufficientPermissions}\nRequiere: \`BAN_MEMBERS\``,
         ephemeral: true,
       })
     }
@@ -102,14 +106,14 @@ module.exports = {
 
       if (!onlyEveryoneRole && memberRolePosition >= executorRolePosition) {
         return await interaction.reply({
-          content: errorMessages.cannotPerformAction('banear'),
+          content: errorMessages.cannotPerformRoleAction('banear'),
           ephemeral: true,
         })
       }
 
       if (memberRolePosition >= botRolePosition) {
         return await interaction.reply({
-          content: errorMessages.cannotPerformActionByBot('banear'),
+          content: errorMessages.cannotPerformRoleActionByBot('banear'),
           ephemeral: true,
         })
       }
