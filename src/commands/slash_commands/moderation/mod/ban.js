@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js')
+const { PermissionFlagsBits, userMention } = require('discord.js')
 const { errorMessages } = require('../../../../constants/errorMessages')
 
 async function handleBan({ interaction, user, member, reason }) {
@@ -6,7 +6,7 @@ async function handleBan({ interaction, user, member, reason }) {
     if (user) {
       await interaction.guild.members.ban(user, { reason })
       await interaction.reply(
-        `${user.toString()} ha sido baneado\nRazón: ${reason}`,
+        `${userMention(user.id)} ha sido baneado\nRazón: ${reason}`,
       )
       return
     }
@@ -14,7 +14,7 @@ async function handleBan({ interaction, user, member, reason }) {
     if (member && member.bannable) {
       await member.ban({ reason })
       await interaction.reply(
-        `${member.toString()} ha sido baneado\nRazón: ${reason}`,
+        `${userMention(member.user.id)} ha sido baneado\nRazón: ${reason}`,
       )
       return
     }
@@ -59,27 +59,26 @@ module.exports = {
       })
     }
 
-    const memberList = await interaction.guild.members.fetch()
-    const member = memberList.get(user.id)
+    const member = await interaction.guild.members.fetch(user.id)
 
     if (member) {
       if (member.user.id === interaction.user.id) {
         return interaction.reply({
-          content: 'No puedes banearte a ti mismo',
+          content: errorMessages.cannotSelfAction('banearte'),
           ephemeral: true,
         })
       }
 
       if (member.user.id === client.user.id) {
         return interaction.reply({
-          content: 'No puedes usar eso contra mí',
+          content: errorMessages.cannotUseAgainst,
           ephemeral: true,
         })
       }
 
       if (member.permissions.has(PermissionFlagsBits.Administrator)) {
         return await interaction.reply({
-          content: 'El usuario es administrador, no puedo hacer eso',
+          content: errorMessages.adminUserCannot,
           ephemeral: true,
         })
       }
@@ -103,16 +102,14 @@ module.exports = {
 
       if (!onlyEveryoneRole && memberRolePosition >= executorRolePosition) {
         return await interaction.reply({
-          content:
-            'No puedes banear al usuario porque tiene un rango igual/superior al tuyo',
+          content: errorMessages.cannotPerformAction('banear'),
           ephemeral: true,
         })
       }
 
       if (memberRolePosition >= botRolePosition) {
         return await interaction.reply({
-          content:
-            'No puedo banear al usuario porque tiene un rango igual/superior al mío',
+          content: errorMessages.cannotPerformActionByBot('banear'),
           ephemeral: true,
         })
       }

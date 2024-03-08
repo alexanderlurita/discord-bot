@@ -83,6 +83,25 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('unban')
+        .setDescription('Remove the ban from a user')
+        .addStringOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to unban (Username or User ID)')
+            .setMinLength(2)
+            .setMaxLength(32)
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('reason')
+            .setDescription('Reason for the unban')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('untimeout')
         .setDescription('Removes timeout from a member')
         .addUserOption((option) =>

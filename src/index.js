@@ -7,6 +7,7 @@ const {
 const { Guilds, GuildMembers, GuildMessages, MessageContent } =
   GatewayIntentBits
 const { User, Message, GuildMember, ThreadMember } = Partials
+
 const { TOKEN } = require('./config')
 const { loadEvents } = require('./handlers/events')
 
