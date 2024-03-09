@@ -42,14 +42,14 @@ module.exports = {
     const hasRole = member.roles.cache.has(role.id)
 
     if (!hasRole) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'El usuario no tiene ese rol',
         ephemeral: true,
       })
     }
 
     if (role.managed) {
-      return interaction.reply({
+      return await interaction.reply({
         content: errorMessages.adminRoleManaged(bold(role.name)),
         ephemeral: true,
       })
@@ -58,7 +58,7 @@ module.exports = {
     const botRolePosition = interaction.guild.members.me.roles.highest.position
 
     if (role.rawPosition > botRolePosition) {
-      return interaction.reply({
+      return await interaction.reply({
         content: errorMessages.superiorRole('quitar'),
         ephemeral: true,
       })

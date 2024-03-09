@@ -116,5 +116,22 @@ module.exports = {
             .setDescription('Reason for removing timeout')
             .setRequired(false),
         ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('warn')
+        .setDescription('Warn a member')
+        .addUserOption((option) =>
+          option
+            .setName('member')
+            .setDescription('Member to be warned')
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('reason')
+            .setDescription('Reason for the warning')
+            .setRequired(false),
+        ),
     ),
 }

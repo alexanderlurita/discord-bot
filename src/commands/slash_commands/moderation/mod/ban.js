@@ -67,14 +67,14 @@ module.exports = {
 
     if (member) {
       if (member.user.id === interaction.user.id) {
-        return interaction.reply({
+        return await interaction.reply({
           content: errorMessages.cannotSelfAction('banearte'),
           ephemeral: true,
         })
       }
 
       if (member.user.id === client.user.id) {
-        return interaction.reply({
+        return await interaction.reply({
           content: errorMessages.cannotUseAgainst,
           ephemeral: true,
         })

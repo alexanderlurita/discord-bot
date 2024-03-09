@@ -9,7 +9,7 @@ async function handleUntimeout({ interaction, member, reason }) {
         `El aislamiento de ${bold(member.user.globalName)} ha sido removido`,
       )
     } else {
-      return interaction.reply(
+      return await interaction.reply(
         `${bold(member.user.globalName)} no se encuentra aislado`,
       )
     }

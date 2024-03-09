@@ -14,7 +14,7 @@ module.exports = {
     const reason = interaction.options.getString('reason') ?? 'No reason given'
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-      return interaction.reply({
+      return await interaction.reply({
         content: `${errorMessages.insufficientPermissions}\nRequiere: \`BAN_MEMBERS\``,
         ephemeral: true,
       })

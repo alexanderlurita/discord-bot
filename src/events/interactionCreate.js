@@ -13,14 +13,14 @@ module.exports = {
     const command = client.commands.get(commandName)
 
     if (!command) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Este comando está desactualizado.',
         ephemeral: true,
       })
     }
 
     if (command.developer && !DEVELOPERS_ID.includes(interaction.user.id)) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Este comando es solo para developers.',
         ephemeral: true,
       })
@@ -32,7 +32,7 @@ module.exports = {
       : null
 
     if (subCommandName && !subCommand) {
-      return interaction.reply({
+      return await interaction.reply({
         content: 'Este subcomando está desactualizado.',
         ephemeral: true,
       })
@@ -49,7 +49,7 @@ module.exports = {
         subCommandName ? `${commandName} ${subCommandName}` : commandName
       }\`. Puedes usarlo nuevamente ${hd(remainingTime, hdOptions)}.`
 
-      return interaction.reply({
+      return await interaction.reply({
         content: replyMessage,
         ephemeral: true,
       })

@@ -10,6 +10,7 @@ const { User, Message, GuildMember, ThreadMember } = Partials
 
 const { TOKEN } = require('./config')
 const { loadEvents } = require('./handlers/events')
+const { connectDB } = require('./database/db')
 
 const client = new Client({
   intents: [Guilds, GuildMembers, GuildMessages, MessageContent],
@@ -24,3 +25,5 @@ client.cooldowns = new Collection()
 loadEvents(client)
 
 client.login(TOKEN)
+
+connectDB()
