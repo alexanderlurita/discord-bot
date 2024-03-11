@@ -1,25 +1,34 @@
 const { WarnModel } = require('../models/warn')
 
-async function createWarn({ guildId, userId, warnData }) {
+async function getUserWarningsFromGuild({ guildId, userId }) {
   try {
-    let userWarn = await WarnModel.findOne({ userId, guildId })
+    const userWarnings = await WarnModel.findOne({ guildId, userId })
+    return userWarnings
+  } catch {
+    throw new Error('Error fetching user warnings')
+  }
+}
 
-    if (!userWarn) {
-      userWarn = new WarnModel({
+async function createUserWarning({ guildId, userId, warnData }) {
+  try {
+    let userWarnings = await WarnModel.findOne({ userId, guildId })
+
+    if (!userWarnings) {
+      userWarnings = new WarnModel({
         userId,
         guildId,
         warnings: [warnData],
       })
     } else {
-      userWarn.warnings.push(warnData)
+      userWarnings.warnings.push(warnData)
     }
 
-    await userWarn.save()
+    await userWarnings.save()
 
-    return userWarn
+    return userWarnings
   } catch {
-    throw new Error('Error creating warning')
+    throw new Error('Error creating user warning')
   }
 }
 
-module.exports = { createWarn }
+module.exports = { getUserWarningsFromGuild, createUserWarning }

@@ -1,10 +1,10 @@
 const { PermissionFlagsBits, bold } = require('discord.js')
 const { errorMessages } = require('../../../../constants/errorMessages')
-const { createWarn } = require('../../../../controllers/warn')
+const { createUserWarning } = require('../../../../controllers/warn')
 
 async function handleWarn({ interaction, member, reason, warnData }) {
   try {
-    const newGuildWarn = await createWarn({
+    const newGuildWarn = await createUserWarning({
       guildId: interaction.guild.id,
       userId: member.user.id,
       warnData,

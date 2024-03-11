@@ -60,6 +60,17 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('listwarn')
+        .setDescription('Show all warnings for a user')
+        .addUserOption((option) =>
+          option
+            .setName('user')
+            .setDescription('User to see their list of warns')
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('timeout')
         .setDescription('Timeout a member')
         .addUserOption((option) =>
