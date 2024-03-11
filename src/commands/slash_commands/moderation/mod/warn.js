@@ -2,6 +2,28 @@ const { PermissionFlagsBits, bold } = require('discord.js')
 const { errorMessages } = require('../../../../constants/errorMessages')
 const { createWarn } = require('../../../../controllers/warn')
 
+async function handleWarn({ interaction, member, reason, warnData }) {
+  try {
+    const newGuildWarn = await createWarn({
+      guildId: interaction.guild.id,
+      userId: member.user.id,
+      warnData,
+    })
+
+    if (newGuildWarn) {
+      await interaction.reply(
+        `${bold(member.user.username)} ha sido advertido.\n${bold(
+          'Razón:',
+        )} ${reason}`,
+      )
+    }
+  } catch (err) {
+    await interaction.reply(
+      'Ocurrió un problema al intentar advertir al usuario',
+    )
+  }
+}
+
 module.exports = {
   subCommand: 'mod.warn',
   async execute(interaction, client) {
@@ -50,6 +72,16 @@ module.exports = {
       })
     }
 
+    const warnData = {
+      moderatorId: interaction.user.id,
+      moderatorUsername: interaction.user.username,
+      reason,
+    }
+
+    if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+      return handleWarn({ interaction, member, reason, warnData })
+    }
+
     const memberRolePosition = member.roles.highest.position
     const executorRolePosition = interaction.member.roles.highest.position
 
@@ -66,28 +98,6 @@ module.exports = {
       })
     }
 
-    const warnData = {
-      moderatorId: interaction.user.id,
-      moderatorUsername: interaction.user.username,
-      reason,
-    }
-
-    try {
-      const newGuildWarn = await createWarn({
-        guildId: interaction.guild.id,
-        userId: member.user.id,
-        warnData,
-      })
-
-      if (newGuildWarn) {
-        await interaction.reply(
-          `${bold(member.user.username)} ha sido advertido.\n${bold(
-            'Razón:',
-          )} ${reason}`,
-        )
-      }
-    } catch (err) {
-      await interaction.reply({ content: err.message, ephemeral: true })
-    }
+    handleWarn({ interaction, member, reason, warnData })
   },
 }
