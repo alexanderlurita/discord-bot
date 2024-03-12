@@ -1,77 +1,55 @@
-const { EmbedBuilder } = require('discord.js')
-const { colors } = require('../../../../constants/colors')
-const { formatTimestamps } = require('../../../../utils/formatTimestamp')
+const {
+  ActionRowBuilder,
+  UserSelectMenuBuilder,
+  ComponentType,
+} = require('discord.js')
+const { buildUserEmbed } = require('../../../../utils/buildUserEmbed')
+
+function handleCollector({ reply, controls, interaction, client }) {
+  const collectorFilter = (i) =>
+    i.user.id === interaction.user.id && i.customId === interaction.id
+
+  const collector = reply.createMessageComponentCollector({
+    componentType: ComponentType.UserSelect,
+    filter: collectorFilter,
+    time: 60_000,
+  })
+
+  collector.on('collect', async (i) => {
+    const memberId = i.values[0]
+
+    const selectedMember = interaction.guild.members.cache.get(memberId)
+    if (!selectedMember) return
+
+    const embed = buildUserEmbed({ member: selectedMember, client })
+
+    await i.update({ embeds: [embed] })
+  })
+
+  collector.on('end', async () => {
+    controls.components.forEach((control) => control.setDisabled(true))
+    await reply.edit({ components: [controls] })
+  })
+}
 
 module.exports = {
   subCommand: 'user.info',
   async execute(interaction, client) {
     const member = interaction.options.getMember('user') || interaction.member
 
-    const avatar = member.user
-      .displayAvatarURL({ dynamic: true, size: 2048 })
-      .replace('webp', 'png')
+    const embedBuilder = buildUserEmbed({ member, client })
 
-    const roles = member.roles.cache
-      .sort((a, b) => b.position - a.position)
-      .map((role) => role.toString())
-      .slice(0, -1)
-    const displayRoles = roles.join(', ') || 'Sin roles'
-
-    const hexColor =
-      member.displayHexColor !== '#000000'
-        ? member.displayHexColor
-        : colors.default
-
-    const formattedCreatedTimestamp = formatTimestamps(
-      member.user.createdTimestamp,
+    const controls = new ActionRowBuilder().addComponents(
+      new UserSelectMenuBuilder()
+        .setCustomId(interaction.id)
+        .setPlaceholder('Selecciona un miembro del servidor'),
     )
-    const formattedJoinedTimestamp = formatTimestamps(member.joinedTimestamp)
 
-    const embedData = {
-      color: hexColor,
-      title: `${member.guild.ownerId === member.id ? '👑' : ''} ${
-        member.user.globalName || member.user.username
-      }`,
-      titleURL: `https://discord.com/users/${member.id}`,
-      thumbnail: avatar,
-      fields: [
-        {
-          name: 'Información del Usuario',
-          value:
-            `**ID:** ${member.id}\n` +
-            `**Usuario:** ${member.user.username}\n` +
-            `**Nombre**: ${member.user.globalName || 'No tiene'}\n` +
-            `**Nick:** ${member.nickname || 'No tiene'}\n` +
-            `**Color:** ${hexColor.toUpperCase()}\n` +
-            `**Bot:** ${member.user.bot ? 'Si' : 'No'}`,
-        },
-        {
-          name: 'Membresía en Discord',
-          value: `${formattedCreatedTimestamp.formattedDate} (${formattedCreatedTimestamp.relativeTime})`,
-        },
-        {
-          name: `Membresía en ${member.guild.name}`,
-          value: `${formattedJoinedTimestamp.formattedDate} (${formattedJoinedTimestamp.relativeTime})`,
-        },
-        {
-          name: 'Roles',
-          value: `${displayRoles}`,
-        },
-      ],
-      footer: {
-        text: client.user.username,
-        iconURL: client.user.displayAvatarURL(),
-      },
-    }
+    const reply = await interaction.reply({
+      embeds: [embedBuilder],
+      components: [controls],
+    })
 
-    const embedBuilder = new EmbedBuilder()
-      .setColor(embedData.color)
-      .setTitle(embedData.title)
-      .setURL(embedData.titleURL)
-      .setThumbnail(embedData.thumbnail)
-      .addFields(embedData.fields)
-      .setFooter(embedData.footer)
-
-    await interaction.reply({ embeds: [embedBuilder] })
+    handleCollector({ reply, controls, interaction, client })
   },
 }
