@@ -3,7 +3,8 @@ const {
   UserSelectMenuBuilder,
   ComponentType,
 } = require('discord.js')
-const { buildUserEmbed } = require('../../../../utils/buildUserEmbed')
+const { buildUserEmbed } = require('../../../../helpers/buildUserEmbed')
+const { errorMessages } = require('../../../../constants/errorMessages')
 
 function handleCollector({ reply, controls, interaction, client }) {
   const collectorFilter = (i) =>
@@ -36,6 +37,13 @@ module.exports = {
   subCommand: 'user.info',
   async execute(interaction, client) {
     const member = interaction.options.getMember('user') || interaction.member
+
+    if (!member) {
+      return await interaction.reply({
+        content: errorMessages.userNotInServer,
+        ephemeral: true,
+      })
+    }
 
     const embedBuilder = buildUserEmbed({ member, client })
 

@@ -10,7 +10,7 @@ function buildUserEmbed({ member, client }) {
     .sort((a, b) => b.position - a.position)
     .map((role) => roleMention(role.id))
     .slice(0, -1)
-  const displayRoles = roles.join(', ') ?? 'Sin roles'
+  const displayRoles = roles.join(', ') || 'Sin roles'
 
   const hexColor =
     member.displayHexColor !== '#000000'
