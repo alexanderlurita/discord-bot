@@ -1,5 +1,6 @@
 const { Events } = require('discord.js')
 const hd = require('humanize-duration')
+
 const { hdOptions } = require('../config/hd')
 const { DEVELOPERS_ID } = require('../config')
 const { trackCooldowns } = require('../handlers/cooldowns')
@@ -26,9 +27,17 @@ module.exports = {
       })
     }
 
+    const subCommandGroupName = interaction.options.getSubcommandGroup(false)
     const subCommandName = interaction.options.getSubcommand(false)
-    const subCommand = subCommandName
-      ? client.subCommands.get(`${commandName}.${subCommandName}`)
+
+    const subCommandKey = subCommandGroupName
+      ? `${commandName}.${subCommandGroupName}.${subCommandName}`
+      : subCommandName
+      ? `${commandName}.${subCommandName}`
+      : null
+
+    const subCommand = subCommandKey
+      ? client.subCommands.get(subCommandKey)
       : null
 
     if (subCommandName && !subCommand) {
@@ -46,7 +55,11 @@ module.exports = {
 
     if (onCooldown) {
       const replyMessage = `No puedes usar el comando \`${
-        subCommandName ? `${commandName} ${subCommandName}` : commandName
+        subCommandGroupName
+          ? `${commandName} ${subCommandGroupName} ${subCommandName}`
+          : subCommandName
+          ? `${commandName} ${subCommandName}`
+          : commandName
       }\`. Puedes usarlo nuevamente ${hd(remainingTime, hdOptions)}.`
 
       return await interaction.reply({

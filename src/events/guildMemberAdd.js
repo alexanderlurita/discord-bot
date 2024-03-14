@@ -1,23 +1,25 @@
-const { Events, userMention, bold } = require('discord.js')
-const { getServerById } = require('../controllers/server')
+const { Events, bold, userMention } = require('discord.js')
+const { getServerConfig } = require('../controllers/server')
 
 module.exports = {
   name: Events.GuildMemberAdd,
   async execute(interaction) {
     const { user, guild } = interaction
 
-    const { welcomeChannel: channelId } = await getServerById({
-      guildId: guild.id,
-    })
-    if (!channelId) return
+    const serverConfig = await getServerConfig({ guildId: guild.id })
+    if (!serverConfig?.welcome?.enabled) return
+
+    if (!serverConfig?.welcome?.channelId) return
+
+    const { channelId } = serverConfig.welcome
 
     const channel = guild.channels.cache.get(channelId)
     if (!channel) return
 
     await channel.send({
-      content: `¡Hola ${userMention(user.id)}! Bienvenido a ${bold(
+      content: `Bienvenido ${userMention(user.id)} a ${bold(
         guild.name,
-      )}, espero que te diviertas :)`,
+      )}! Espero que te diviertas :)`,
     })
   },
 }
