@@ -15,11 +15,13 @@ const { errorMessages } = require('../../../../constants/errorMessages')
 const { getUserWarns, deleteWarnById } = require('../../../../controllers/warn')
 const { formatWarningDetails } = require('../../../../helpers/formatWarnings')
 
-const userWarnsCache = {}
+const serverWarnsCache = {}
 const BUTTONS_TIMEOUT = 60_000
 
-function clearUserCache(userId) {
-  delete userWarnsCache[userId]
+function clearUserCache({ guildId, userId }) {
+  if (serverWarnsCache[guildId] && serverWarnsCache[guildId][userId]) {
+    delete serverWarnsCache[guildId][userId]
+  }
 }
 
 function handleCollector({ reply, warnId, userId, interaction }) {
@@ -43,7 +45,7 @@ function handleCollector({ reply, warnId, userId, interaction }) {
           warnId,
         })
 
-        clearUserCache(userId)
+        clearUserCache({ guildId: interaction.guild.id, userId })
 
         await i.update({
           content: `${userMention(
@@ -74,9 +76,14 @@ module.exports = {
   async autocomplete(interaction) {
     const focusedOption = interaction.options.getFocused(true)
     const userId = interaction.options.get('member').value
+    const guildId = interaction.guild.id
 
-    if (userWarnsCache[userId]) {
-      const filteredWarns = userWarnsCache[userId].filter((warn) =>
+    if (!serverWarnsCache[guildId]) {
+      serverWarnsCache[guildId] = {}
+    }
+
+    if (serverWarnsCache[guildId][userId]) {
+      const filteredWarns = serverWarnsCache[guildId][userId].filter((warn) =>
         warn.reason.includes(focusedOption.value),
       )
 
@@ -95,7 +102,7 @@ module.exports = {
 
     if (!userWarns) return await interaction.respond([])
 
-    const userWarningsFormatted = userWarns.warnings
+    const userWarnsFormatted = userWarns.warnings
       .slice()
       .reverse()
       .map((warn) => {
@@ -112,11 +119,13 @@ module.exports = {
         }
       })
 
-    const filteredWarns = userWarningsFormatted.filter((warn) =>
+    if (userWarnsFormatted.length > 0) {
+      serverWarnsCache[guildId][userId] = userWarnsFormatted
+    }
+
+    const filteredWarns = userWarnsFormatted.filter((warn) =>
       warn.reason.includes(focusedOption.value),
     )
-
-    userWarnsCache[userId] = userWarningsFormatted
 
     await interaction.respond(
       filteredWarns.map((choice) => ({
