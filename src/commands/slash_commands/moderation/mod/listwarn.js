@@ -10,12 +10,12 @@ const {
 
 const { errorMessages } = require('../../../../constants/errorMessages')
 const { colors } = require('../../../../constants/colors')
-const { getUserWarningsFromGuild } = require('../../../../controllers/warn')
+const { getUserWarns } = require('../../../../controllers/warn')
 const { formatWarnings } = require('../../../../helpers/formatWarnings')
 const { paginateArray } = require('../../../../utils/pagination')
 
 const ITEMS_PER_PAGE = 5
-const BUTTON_TIMEOUT = 90000
+const BUTTONS_TIMEOUT = 90_000
 
 function handleCollector({ reply, embed, controls, pages, interaction }) {
   let pageIndex = 0
@@ -24,7 +24,7 @@ function handleCollector({ reply, embed, controls, pages, interaction }) {
   const collector = reply.createMessageComponentCollector({
     componentType: ComponentType.Button,
     filter: collectorFilter,
-    time: BUTTON_TIMEOUT,
+    time: BUTTONS_TIMEOUT,
   })
 
   collector.on('collect', async (i) => {
@@ -45,7 +45,7 @@ function handleCollector({ reply, embed, controls, pages, interaction }) {
     await i.update({ embeds: [embed], components: [controls] })
   })
 
-  collector.on('end', async (i) => {
+  collector.on('end', async () => {
     controls.components.forEach((control) => control.setDisabled(true))
     await reply.edit({ components: [controls] })
   })
@@ -63,7 +63,7 @@ module.exports = {
       })
     }
 
-    const userWarnings = await getUserWarningsFromGuild({
+    const userWarnings = await getUserWarns({
       guildId: interaction.guild.id,
       userId: user.id,
     })

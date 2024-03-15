@@ -1,25 +1,25 @@
 const { PermissionFlagsBits, bold } = require('discord.js')
 const { errorMessages } = require('../../../../constants/errorMessages')
-const { createUserWarning } = require('../../../../controllers/warn')
+const { saveUserWarn } = require('../../../../controllers/warn')
 
 async function handleWarn({ interaction, member, reason, warnData }) {
   try {
-    const newGuildWarn = await createUserWarning({
+    const savedUserWarnEntry = await saveUserWarn({
       guildId: interaction.guild.id,
       userId: member.user.id,
       warnData,
     })
 
-    if (newGuildWarn) {
+    if (savedUserWarnEntry) {
       await interaction.reply(
         `${bold(member.user.username)} ha sido advertido.\n${bold(
           'Razón:',
         )} ${reason}`,
       )
     }
-  } catch (err) {
+  } catch {
     await interaction.reply(
-      'Ocurrió un problema al intentar advertir al usuario',
+      'Ocurrió un problema al intentar advertir al usuario.',
     )
   }
 }
@@ -28,7 +28,7 @@ module.exports = {
   subCommand: 'mod.warn',
   async execute(interaction, client) {
     const member = interaction.options.getMember('member')
-    const reason = interaction.options.getString('reason') || 'No reason given'
+    const reason = interaction.options.getString('reason') ?? 'No reason given'
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
       return await interaction.reply({

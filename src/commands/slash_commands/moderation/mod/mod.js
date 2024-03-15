@@ -130,6 +130,24 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('unwarn')
+        .setDescription('Remove a warning from a member')
+        .addUserOption((option) =>
+          option
+            .setName('member')
+            .setDescription('Member to be unwarned')
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('warn')
+            .setDescription('Warn to remove')
+            .setAutocomplete(true)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('warn')
         .setDescription('Warn a member')
         .addUserOption((option) =>

@@ -1,34 +1,76 @@
 const { WarnModel } = require('../models/warn')
 
-async function getUserWarningsFromGuild({ guildId, userId }) {
+async function getUserWarns({ guildId, userId }) {
   try {
-    const userWarnings = await WarnModel.findOne({ guildId, userId })
-    return userWarnings
+    const userWarns = await WarnModel.findOne({ guildId, userId })
+    return userWarns
   } catch {
     throw new Error('Error fetching user warnings')
   }
 }
 
-async function createUserWarning({ guildId, userId, warnData }) {
+async function saveUserWarn({ guildId, userId, warnData }) {
   try {
-    let userWarnings = await WarnModel.findOne({ userId, guildId })
+    let userWarns = await WarnModel.findOne({ userId, guildId })
 
-    if (!userWarnings) {
-      userWarnings = new WarnModel({
+    if (!userWarns) {
+      userWarns = new WarnModel({
         userId,
         guildId,
         warnings: [warnData],
       })
     } else {
-      userWarnings.warnings.push(warnData)
+      userWarns.warnings.push(warnData)
     }
 
-    await userWarnings.save()
+    await userWarns.save()
 
-    return userWarnings
+    return userWarns
   } catch {
     throw new Error('Error creating user warning')
   }
 }
 
-module.exports = { getUserWarningsFromGuild, createUserWarning }
+async function deleteWarnById({ guildId, userId, warnId }) {
+  try {
+    const userWarns = await WarnModel.findOne({ guildId, userId })
+
+    if (!userWarns) return userWarns
+
+    const indexToDelete = userWarns.warnings.findIndex((warn) =>
+      warn._id.equals(warnId),
+    )
+
+    if (indexToDelete !== -1) {
+      userWarns.warnings.splice(indexToDelete, 1)
+    }
+
+    await userWarns.save()
+
+    return userWarns
+  } catch {
+    throw new Error('Error deleting user warning')
+  }
+}
+
+async function clearUserWarns({ guildId, userId }) {
+  try {
+    const userWarns = await WarnModel.findOne({ guildId, userId })
+
+    if (!userWarns) return userWarns
+
+    userWarns.warnings = []
+    await userWarns.save()
+
+    return userWarns
+  } catch {
+    throw new Error('Error clearing user warnings')
+  }
+}
+
+module.exports = {
+  getUserWarns,
+  saveUserWarn,
+  deleteWarnById,
+  clearUserWarns,
+}

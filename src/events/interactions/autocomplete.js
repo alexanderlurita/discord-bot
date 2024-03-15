@@ -25,12 +25,8 @@ module.exports = {
 
     if (subCommandName && !subCommand) return
 
-    try {
-      subCommand
-        ? await subCommand.autocomplete(interaction)
-        : await command.autocomplete(interaction)
-    } catch (err) {
-      console.error(err)
-    }
+    subCommand
+      ? await subCommand.autocomplete(interaction)
+      : await command.autocomplete(interaction)
   },
 }

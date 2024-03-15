@@ -1,27 +1,29 @@
 const { blockQuote, bold, inlineCode, time } = require('discord.js')
 
+function formatWarningDetails({ user, warn }) {
+  const formattedDate = time(parseInt(warn.createdAt / 1000), 'f')
+  const formattedRelativeDate = time(parseInt(warn.createdAt / 1000), 'R')
+
+  const warningDetails = [
+    `${bold('Usuario:')} ${user.username} (${inlineCode(user.id)})`,
+    `${bold('Razón:')} ${warn.reason}`,
+    `${bold('Moderador:')} ${warn.moderatorUsername} (${inlineCode(
+      warn.moderatorId,
+    )})`,
+    `${bold('Fecha:')} ${formattedDate} (${formattedRelativeDate})`,
+  ].join('\n')
+
+  return {
+    name: `ID: ${warn._id}`,
+    value: blockQuote(warningDetails),
+  }
+}
+
 function formatWarnings({ user, warnings }) {
   return warnings
     .slice()
     .reverse()
-    .map((warn) => {
-      const formattedDate = time(parseInt(warn.createdAt / 1000), 'f')
-      const formattedRelativeDate = time(parseInt(warn.createdAt / 1000), 'R')
-
-      const warningDetails = [
-        `${bold('Usuario:')} ${user.username} (${inlineCode(user.id)})`,
-        `${bold('Razón:')} ${warn.reason}`,
-        `${bold('Moderador:')} ${warn.moderatorUsername} (${inlineCode(
-          warn.moderatorId,
-        )})`,
-        `${bold('Fecha:')} ${formattedDate} (${formattedRelativeDate})`,
-      ].join('\n')
-
-      return {
-        name: `ID: ${warn._id}`,
-        value: blockQuote(warningDetails),
-      }
-    })
+    .map((warn) => formatWarningDetails({ user, warn }))
 }
 
-module.exports = { formatWarnings }
+module.exports = { formatWarnings, formatWarningDetails }
