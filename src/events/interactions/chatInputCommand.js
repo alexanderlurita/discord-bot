@@ -1,9 +1,9 @@
 const { Events } = require('discord.js')
 const hd = require('humanize-duration')
 
-const { hdOptions } = require('../config/hd')
-const { DEVELOPERS_ID } = require('../config')
-const { trackCooldowns } = require('../handlers/cooldowns')
+const { hdOptions } = require('../../config/hd')
+const { DEVELOPERS_ID } = require('../../config')
+const { trackCooldowns } = require('../../handlers/cooldowns')
 
 module.exports = {
   name: Events.InteractionCreate,
