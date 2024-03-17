@@ -43,6 +43,17 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('clearwarns')
+        .setDescription('Clears all warnings of a member')
+        .addUserOption((option) =>
+          option
+            .setName('member')
+            .setDescription('Member whose warnings will be cleared')
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('kick')
         .setDescription('Kick out a member')
         .addUserOption((option) =>
