@@ -11,7 +11,9 @@ const {
 const { errorMessages } = require('../../../../constants/errorMessages')
 const { colors } = require('../../../../constants/colors')
 const { getUserWarns } = require('../../../../controllers/warn')
-const { formatWarnings } = require('../../../../helpers/formatWarnings')
+const {
+  formatDetailedWarningsList,
+} = require('../../../../helpers/formatWarnings')
 const { paginateArray } = require('../../../../utils/pagination')
 
 const ITEMS_PER_PAGE = 5
@@ -75,7 +77,7 @@ module.exports = {
       })
     }
 
-    const listWarnings = formatWarnings({
+    const listWarnings = formatDetailedWarningsList({
       user,
       warnings: userWarnings.warnings,
     })

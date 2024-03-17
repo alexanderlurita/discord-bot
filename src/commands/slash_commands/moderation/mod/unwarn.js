@@ -9,20 +9,16 @@ const {
   bold,
   userMention,
 } = require('discord.js')
-const hd = require('humanize-duration')
 
 const { errorMessages } = require('../../../../constants/errorMessages')
 const { getUserWarns, deleteWarnById } = require('../../../../controllers/warn')
-const { formatWarningDetails } = require('../../../../helpers/formatWarnings')
+const {
+  formatSimpleWarningsList,
+  formatDetailedWarning,
+} = require('../../../../helpers/formatWarnings')
+const { formatChoice } = require('../../../../utils/formatChoice')
 
-const serverWarnsCache = {}
 const BUTTONS_TIMEOUT = 60_000
-
-function clearUserCache({ guildId, userId }) {
-  if (serverWarnsCache[guildId] && serverWarnsCache[guildId][userId]) {
-    delete serverWarnsCache[guildId][userId]
-  }
-}
 
 function handleCollector({ reply, warnId, userId, interaction }) {
   const collectorFilter = (i) => i.user.id === interaction.user.id
@@ -44,8 +40,6 @@ function handleCollector({ reply, warnId, userId, interaction }) {
           userId,
           warnId,
         })
-
-        clearUserCache({ guildId: interaction.guild.id, userId })
 
         await i.update({
           content: `${userMention(
@@ -74,65 +68,25 @@ module.exports = {
   subCommand: 'mod.unwarn',
 
   async autocomplete(interaction) {
-    const focusedOption = interaction.options.getFocused(true)
+    const focusedValue = interaction.options.getFocused()
     const userId = interaction.options.get('member').value
     const guildId = interaction.guild.id
 
-    if (!serverWarnsCache[guildId]) {
-      serverWarnsCache[guildId] = {}
+    const userWarns = await getUserWarns({ guildId, userId })
+
+    if (!userWarns || !userWarns.warnings.length) {
+      return await interaction.respond([])
     }
 
-    if (serverWarnsCache[guildId][userId]) {
-      const filteredWarns = serverWarnsCache[guildId][userId].filter((warn) =>
-        warn.reason.includes(focusedOption.value),
-      )
-
-      return await interaction.respond(
-        filteredWarns.map((choice) => ({
-          name: choice.reason,
-          value: choice.value,
-        })),
-      )
-    }
-
-    const userWarns = await getUserWarns({
-      guildId: interaction.guild.id,
-      userId,
+    const formattedWarns = formatSimpleWarningsList({
+      warnings: userWarns.warnings,
     })
 
-    if (!userWarns) return await interaction.respond([])
-
-    const userWarnsFormatted = userWarns.warnings
-      .slice()
-      .reverse()
-      .map((warn) => {
-        const timeAgo = Date.now() - warn.createdAt
-        const timeFormat = hd(timeAgo, {
-          language: 'es',
-          round: true,
-          largest: 1,
-        })
-
-        return {
-          reason: `${warn.reason} (hace ${timeFormat})`,
-          value: warn._id,
-        }
-      })
-
-    if (userWarnsFormatted.length > 0) {
-      serverWarnsCache[guildId][userId] = userWarnsFormatted
-    }
-
-    const filteredWarns = userWarnsFormatted.filter((warn) =>
-      warn.reason.includes(focusedOption.value),
+    const filteredWarns = formattedWarns.filter((warn) =>
+      warn.reason.includes(focusedValue),
     )
 
-    await interaction.respond(
-      filteredWarns.map((choice) => ({
-        name: choice.reason,
-        value: choice.value,
-      })),
-    )
+    await interaction.respond(filteredWarns.map(formatChoice))
   },
 
   async execute(interaction, client) {
@@ -189,7 +143,7 @@ module.exports = {
       })
     }
 
-    const formattedWarningDetail = formatWarningDetails({
+    const formattedWarningDetail = formatDetailedWarning({
       user: member.user,
       warn: warnData,
     })

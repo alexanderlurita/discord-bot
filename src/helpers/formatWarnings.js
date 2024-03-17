@@ -1,6 +1,24 @@
 const { blockQuote, bold, inlineCode, time } = require('discord.js')
+const hd = require('humanize-duration')
 
-function formatWarningDetails({ user, warn }) {
+function formatSimpleWarning({ warn }) {
+  const timeAgo = Date.now() - warn.createdAt
+  const timeFormat = hd(timeAgo, { language: 'es', round: true, largest: 1 })
+
+  return {
+    reason: `${warn.reason} (hace ${timeFormat})`,
+    value: warn._id,
+  }
+}
+
+function formatSimpleWarningsList({ warnings }) {
+  return warnings
+    .slice()
+    .reverse()
+    .map((warn) => formatSimpleWarning({ warn }))
+}
+
+function formatDetailedWarning({ user, warn }) {
   const formattedDate = time(parseInt(warn.createdAt / 1000), 'f')
   const formattedRelativeDate = time(parseInt(warn.createdAt / 1000), 'R')
 
@@ -19,11 +37,15 @@ function formatWarningDetails({ user, warn }) {
   }
 }
 
-function formatWarnings({ user, warnings }) {
+function formatDetailedWarningsList({ user, warnings }) {
   return warnings
     .slice()
     .reverse()
-    .map((warn) => formatWarningDetails({ user, warn }))
+    .map((warn) => formatDetailedWarning({ user, warn }))
 }
 
-module.exports = { formatWarnings, formatWarningDetails }
+module.exports = {
+  formatSimpleWarningsList,
+  formatDetailedWarningsList,
+  formatDetailedWarning,
+}
