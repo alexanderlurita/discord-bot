@@ -71,6 +71,11 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('listban')
+        .setDescription('Show all banned users from the server'),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('listwarn')
         .setDescription('Show all warnings for a user')
         .addUserOption((option) =>
