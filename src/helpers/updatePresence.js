@@ -1,5 +1,5 @@
 const { statusList } = require('../constants/status')
-const { getRandom } = require('./getRandom')
+const { getRandom } = require('../utils/getRandom')
 
 function updatePresence(client, interval = 10000) {
   client.user.setStatus('idle')

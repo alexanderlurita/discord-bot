@@ -6,6 +6,9 @@ module.exports = {
     .setDescription('Commands to obtain information from the server')
     .setDMPermission(false)
     .addSubcommand((subcommand) =>
+      subcommand.setName('banner').setDescription("Shows the server's banner"),
+    )
+    .addSubcommand((subcommand) =>
       subcommand.setName('icon').setDescription("Shows the server's icon"),
     )
     .addSubcommand((subcommand) =>
