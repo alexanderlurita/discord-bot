@@ -1,32 +1,34 @@
+const { ActionRowBuilder } = require('discord.js')
+const { errorMessages } = require('../../../../constants/errorMessages')
 const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-} = require('discord.js')
-const { colors } = require('../../../../constants/colors')
+  buildUserAvatarEmbed,
+  getAvatarURL,
+} = require('../../../../helpers/userTools')
+const { createLinkButton } = require('../../../../helpers/buttons')
 
 module.exports = {
   subCommand: 'user.avatar',
   async execute(interaction) {
-    const member = interaction.options.getMember('user') || interaction.member
+    const user = interaction.options.getUser('user') ?? interaction.user
 
-    const avatar = member.user
-      .displayAvatarURL({ dynamic: true, size: 2048 })
-      .replace('webp', 'png')
+    if (!user) {
+      return await interaction.reply({
+        content: errorMessages.userNotFound,
+        ephemeral: true,
+      })
+    }
 
-    const embedBuilder = new EmbedBuilder()
-      .setColor(colors.warning)
-      .setTitle(`Avatar de ${member.user.globalName || member.user.username}`)
-      .setImage(avatar)
+    const avatarURL = getAvatarURL({ user })
 
-    const buttons = new ActionRowBuilder().addComponents([
-      new ButtonBuilder()
-        .setLabel('Ver en navegador')
-        .setStyle(ButtonStyle.Link)
-        .setURL(avatar),
-    ])
+    const embed = buildUserAvatarEmbed({ user })
 
-    await interaction.reply({ embeds: [embedBuilder], components: [buttons] })
+    const linkButton = createLinkButton({
+      label: 'Ver en navegador',
+      url: avatarURL,
+    })
+
+    const row = new ActionRowBuilder().addComponents(linkButton)
+
+    await interaction.reply({ embeds: [embed], components: [row] })
   },
 }

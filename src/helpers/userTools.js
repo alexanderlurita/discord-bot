@@ -1,10 +1,25 @@
-const { EmbedBuilder, bold, time, roleMention } = require('discord.js')
+const { EmbedBuilder, bold, roleMention, time } = require('discord.js')
 const { colors } = require('../constants/colors')
 
-function buildUserEmbed({ member, client }) {
-  const avatar = member.user
+function getAvatarURL({ user }) {
+  return user
     .displayAvatarURL({ dynamic: true, size: 2048 })
     .replace('webp', 'png')
+}
+
+function buildUserAvatarEmbed({ user }) {
+  const avatarURL = getAvatarURL({ user })
+
+  const embed = new EmbedBuilder()
+    .setColor(colors.warning)
+    .setTitle(`Avatar de ${user.globalName ?? user.username}`)
+    .setImage(avatarURL)
+
+  return embed
+}
+
+function buildUserInfoEmbed({ member, client }) {
+  const avatarURL = getAvatarURL({ user: member.user })
 
   const roles = member.roles.cache
     .sort((a, b) => b.position - a.position)
@@ -34,7 +49,7 @@ function buildUserEmbed({ member, client }) {
       }`,
     )
     .setURL(`https://discord.com/users/${member.id}`)
-    .setThumbnail(avatar)
+    .setThumbnail(avatarURL)
     .addFields(
       {
         name: 'Información del Usuario',
@@ -67,4 +82,4 @@ function buildUserEmbed({ member, client }) {
   return embed
 }
 
-module.exports = { buildUserEmbed }
+module.exports = { getAvatarURL, buildUserAvatarEmbed, buildUserInfoEmbed }

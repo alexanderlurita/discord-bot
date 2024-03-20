@@ -3,6 +3,7 @@ const errorMessages = {
     'No tienes el permiso necesario para ejecutar este comando.',
   botInsufficientPermissions:
     'No tengo el permiso necesario para ejecutar este comando.',
+  userNotFound: 'El usuario no se encuentra o su cuenta ha sido eliminada.',
   userNotInServer: 'El usuario no existe en este servidor.',
   cannotUseAgainst: 'No puedes usar eso contra mí.',
   adminUserCannot: 'El usuario es administrador, no puedo hacer eso.',

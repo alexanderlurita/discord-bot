@@ -1,42 +1,13 @@
-const {
-  ActionRowBuilder,
-  UserSelectMenuBuilder,
-  ComponentType,
-} = require('discord.js')
-const { buildUserEmbed } = require('../../../../helpers/buildUserEmbed')
+const { ActionRowBuilder, UserSelectMenuBuilder } = require('discord.js')
+
 const { errorMessages } = require('../../../../constants/errorMessages')
-
-function handleCollector({ reply, controls, interaction, client }) {
-  const collectorFilter = (i) =>
-    i.user.id === interaction.user.id && i.customId === interaction.id
-
-  const collector = reply.createMessageComponentCollector({
-    componentType: ComponentType.UserSelect,
-    filter: collectorFilter,
-    time: 60_000,
-  })
-
-  collector.on('collect', async (i) => {
-    const memberId = i.values[0]
-
-    const selectedMember = interaction.guild.members.cache.get(memberId)
-    if (!selectedMember) return
-
-    const embed = buildUserEmbed({ member: selectedMember, client })
-
-    await i.update({ embeds: [embed] })
-  })
-
-  collector.on('end', async () => {
-    controls.components.forEach((control) => control.setDisabled(true))
-    await reply.edit({ components: [controls] })
-  })
-}
+const { buildUserInfoEmbed } = require('../../../../helpers/userTools')
+const { createButton } = require('../../../../helpers/buttons')
 
 module.exports = {
   subCommand: 'user.info',
   async execute(interaction, client) {
-    const member = interaction.options.getMember('user') || interaction.member
+    const member = interaction.options.getMember('user') ?? interaction.member
 
     if (!member) {
       return await interaction.reply({
@@ -45,19 +16,25 @@ module.exports = {
       })
     }
 
-    const embedBuilder = buildUserEmbed({ member, client })
+    const embedBuilder = buildUserInfoEmbed({ member, client })
 
-    const controls = new ActionRowBuilder().addComponents(
+    const userSelectMenuRow = new ActionRowBuilder().addComponents(
       new UserSelectMenuBuilder()
-        .setCustomId(interaction.id)
+        .setCustomId('change-member-info')
         .setPlaceholder('Selecciona un miembro del servidor'),
     )
 
-    const reply = await interaction.reply({
-      embeds: [embedBuilder],
-      components: [controls],
+    const showUserAvatarBtn = createButton({
+      id: 'show-user-avatar',
+      label: 'Mirar avatar',
+      emoji: '🖼️',
     })
 
-    handleCollector({ reply, controls, interaction, client })
+    const buttonsRow = new ActionRowBuilder().addComponents(showUserAvatarBtn)
+
+    await interaction.reply({
+      embeds: [embedBuilder],
+      components: [userSelectMenuRow, buttonsRow],
+    })
   },
 }
