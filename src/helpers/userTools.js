@@ -7,6 +7,10 @@ function getAvatarURL({ user }) {
     .replace('webp', 'png')
 }
 
+function getBannerURL({ user }) {
+  return user.bannerURL({ dynamic: true, size: 2048 })?.replace('webp', 'png')
+}
+
 function buildUserAvatarEmbed({ user }) {
   const avatarURL = getAvatarURL({ user })
 
@@ -14,6 +18,17 @@ function buildUserAvatarEmbed({ user }) {
     .setColor(colors.warning)
     .setTitle(`Avatar de ${user.globalName ?? user.username}`)
     .setImage(avatarURL)
+
+  return embed
+}
+
+function buildUserBannerEmbed({ user }) {
+  const bannerURL = getBannerURL({ user })
+
+  const embed = new EmbedBuilder()
+    .setColor(colors.warning)
+    .setTitle(`Banner de ${user.globalName ?? user.username}`)
+    .setImage(bannerURL)
 
   return embed
 }
@@ -82,4 +97,10 @@ function buildUserInfoEmbed({ member, client }) {
   return embed
 }
 
-module.exports = { getAvatarURL, buildUserAvatarEmbed, buildUserInfoEmbed }
+module.exports = {
+  getAvatarURL,
+  getBannerURL,
+  buildUserAvatarEmbed,
+  buildUserBannerEmbed,
+  buildUserInfoEmbed,
+}

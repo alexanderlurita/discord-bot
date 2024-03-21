@@ -9,7 +9,6 @@ module.exports = {
 
     if (!menu) return
 
-    await interaction.deferUpdate()
     await menu.execute(interaction, client)
   },
 }

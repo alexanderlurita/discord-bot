@@ -1,6 +1,6 @@
 const { Events } = require('discord.js')
-const { loadSlashCommands } = require('../handlers/slashCommands')
-const { updatePresence } = require('../helpers/updatePresence')
+const { loadSlashCommands } = require('../../handlers/slashCommands')
+const { updatePresence } = require('../../helpers/updatePresence')
 
 module.exports = {
   name: Events.ClientReady,

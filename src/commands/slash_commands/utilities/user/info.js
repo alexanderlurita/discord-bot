@@ -30,7 +30,16 @@ module.exports = {
       emoji: '🖼️',
     })
 
-    const buttonsRow = new ActionRowBuilder().addComponents(showUserAvatarBtn)
+    const showUserBannerBtn = createButton({
+      id: 'show-user-banner',
+      label: 'Mirar banner',
+      emoji: '🖼️',
+    })
+
+    const buttonsRow = new ActionRowBuilder().addComponents(
+      showUserAvatarBtn,
+      showUserBannerBtn,
+    )
 
     await interaction.reply({
       embeds: [embedBuilder],

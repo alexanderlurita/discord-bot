@@ -1,43 +1,36 @@
+const { ActionRowBuilder } = require('discord.js')
 const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-} = require('discord.js')
-const { colors } = require('../../../../constants/colors')
+  buildUserBannerEmbed,
+  getBannerURL,
+} = require('../../../../helpers/userTools')
+const { createLinkButton } = require('../../../../helpers/buttons')
 
 module.exports = {
   subCommand: 'user.banner',
   async execute(interaction) {
-    const member = interaction.options.getMember('user') || interaction.member
+    const user = interaction.options.getUser('user') ?? interaction.member
 
-    const { banner } = await member.user.fetch()
+    const { banner } = await user.fetch()
 
     if (!banner) {
       return await interaction.reply(
-        interaction.user.id === member.id
-          ? 'No tienes banner'
-          : `**${
-              member.user.globalName ?? member.user.username
-            }** no tiene banner`,
+        interaction.user.id === user.id
+          ? 'No tienes banner.'
+          : `**${user.globalName ?? user.username}** no tiene banner.`,
       )
     }
 
-    const extension = banner.startsWith('a_') ? '.gif' : '.png'
-    const url = `https://cdn.discordapp.com/banners/${member.user.id}/${banner}${extension}?size=2048`
+    const bannerURL = getBannerURL({ user })
 
-    const embedBuilder = new EmbedBuilder()
-      .setColor(colors.warning)
-      .setTitle(`Banner de ${member.user.globalName ?? member.user.username}`)
-      .setImage(url)
+    const embed = buildUserBannerEmbed({ user })
 
-    const buttons = new ActionRowBuilder().addComponents([
-      new ButtonBuilder()
-        .setLabel('Ver en navegador')
-        .setStyle(ButtonStyle.Link)
-        .setURL(url),
-    ])
+    const linkButton = createLinkButton({
+      label: 'Ver en navegador',
+      url: bannerURL,
+    })
 
-    await interaction.reply({ embeds: [embedBuilder], components: [buttons] })
+    const row = new ActionRowBuilder().addComponents(linkButton)
+
+    await interaction.reply({ embeds: [embed], components: [row] })
   },
 }

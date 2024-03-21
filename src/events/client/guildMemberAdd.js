@@ -1,5 +1,5 @@
 const { Events, bold, userMention } = require('discord.js')
-const { getServerConfig } = require('../controllers/server')
+const { getServerConfig } = require('../../controllers/server')
 
 module.exports = {
   name: Events.GuildMemberAdd,
