@@ -10,6 +10,7 @@ const { User, Message, GuildMember, ThreadMember } = Partials
 
 const { TOKEN } = require('./config')
 
+const { handleErrors } = require('./handlers/errors')
 const { loadEvents } = require('./handlers/events')
 const { loadButtons } = require('./handlers/buttons')
 const { loadMenus } = require('./handlers/menus')
@@ -28,6 +29,7 @@ client.cooldowns = new Collection()
 client.buttons = new Collection()
 client.menus = new Collection()
 
+handleErrors(client)
 loadEvents(client)
 loadButtons(client)
 loadMenus(client)
