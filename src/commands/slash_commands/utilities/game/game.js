@@ -6,6 +6,9 @@ module.exports = {
     .setDescription('Commands to play mini-games')
     .setDMPermission(false)
     .addSubcommand((option) =>
+      option.setName('rps').setDescription('Play rock, paper or scissor'),
+    )
+    .addSubcommand((option) =>
       option
         .setName('roll')
         .setDescription(
