@@ -14,7 +14,7 @@ async function handleUntimeout({ interaction, member, reason }) {
       )
     }
   } catch (err) {
-    console.error(err)
+    console.log(err)
     await interaction.reply('Ocurrió un error al intentar desaislar al usuario')
   }
 }

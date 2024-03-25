@@ -16,7 +16,7 @@ async function handleKickout({ interaction, member, reason }) {
       ephemeral: true,
     })
   } catch (err) {
-    console.error(err)
+    console.log(err)
     await interaction.reply('Ocurrió un error al intentar expulsar al usuario')
   }
 }

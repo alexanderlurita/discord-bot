@@ -42,7 +42,7 @@ async function handleTimeout({ interaction, member, duration, reason }) {
       )}.\nRazón: ${reason}`,
     )
   } catch (err) {
-    console.error(err)
+    console.log(err)
     await interaction.reply('Ocurrió un error al intentar aislar al usuario')
   }
 }

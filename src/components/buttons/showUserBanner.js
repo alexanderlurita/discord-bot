@@ -12,7 +12,7 @@ module.exports = {
     const userId = interaction.message.embeds[0].data.url.split('/').pop()
     const user = await client.users
       .fetch(userId, { force: true })
-      .catch(console.error)
+      .catch(console.log)
 
     if (!user) {
       return await interaction.reply({

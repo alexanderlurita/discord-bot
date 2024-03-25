@@ -24,7 +24,7 @@ async function handleBan({ interaction, user, member, reason }) {
       ephemeral: true,
     })
   } catch (err) {
-    console.error(err)
+    console.log(err)
     await interaction.reply('Ocurrió un error al intentar banear al usuario')
   }
 }

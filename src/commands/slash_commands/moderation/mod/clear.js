@@ -50,7 +50,7 @@ module.exports = {
     try {
       await interaction.channel.bulkDelete(messagesToDelete, true)
     } catch (err) {
-      console.error(err)
+      console.log(err)
       return await interaction.editReply({
         content: 'Ocurrió un error al intentar borrar mensajes',
       })

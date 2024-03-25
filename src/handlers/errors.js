@@ -12,7 +12,7 @@ function sendErrorEmbed(embed) {
 
 function handleErrors(client) {
   client.on('error', (err) => {
-    console.error(err)
+    console.log(err)
 
     embed
       .setTitle('Discord API Error')
@@ -27,7 +27,7 @@ function handleErrors(client) {
   })
 
   process.on('unhandledRejection', (reason, promise) => {
-    console.error(reason, '\n', promise)
+    console.log(reason, '\n', promise)
 
     embed
       .setTitle('Unhandled Rejection/Catch')

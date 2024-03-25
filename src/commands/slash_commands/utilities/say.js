@@ -37,7 +37,7 @@ module.exports = {
         components: [actionRowBuilder],
       })
     } catch (err) {
-      console.error(err)
+      console.log(err)
     }
 
     await interaction.reply({

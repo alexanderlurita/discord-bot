@@ -13,7 +13,7 @@ module.exports = {
   subCommand: 'game.rps',
   async execute(interaction, client) {
     const userDisplayName =
-      interaction.user.username ?? interaction.user.username
+      interaction.user.globalName ?? interaction.user.username
 
     const embed = new EmbedBuilder()
       .setColor(Colors.Green)
