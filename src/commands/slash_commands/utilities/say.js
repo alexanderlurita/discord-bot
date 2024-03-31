@@ -1,4 +1,3 @@
-const { randomUUID } = require('node:crypto')
 const {
   ActionRowBuilder,
   ButtonBuilder,
@@ -25,7 +24,7 @@ module.exports = {
 
     const actionRowBuilder = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
-        .setCustomId(randomUUID())
+        .setCustomId(interaction.id)
         .setLabel(`Enviado por ${user}`)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(true),

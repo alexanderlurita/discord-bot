@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js')
-const { getRandom } = require('../../../utils/getRandom')
+const { getRandomFromArray } = require('../../../utils/random')
 const { eightBallResponses } = require('../../../constants/responses')
 const { colors } = require('../../../constants/colors')
 
@@ -17,7 +17,7 @@ module.exports = {
   async execute(interaction, client) {
     const question = interaction.options.getString('question')
 
-    const anwser = getRandom(eightBallResponses)
+    const anwser = getRandomFromArray(eightBallResponses)
 
     const embedBuilder = new EmbedBuilder()
       .setColor(colors.warning)

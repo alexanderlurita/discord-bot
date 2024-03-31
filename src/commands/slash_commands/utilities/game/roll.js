@@ -1,4 +1,5 @@
 const { bold } = require('discord.js')
+const { getRandomInteger } = require('../../../../utils/random')
 
 module.exports = {
   subCommand: 'game.roll',
@@ -13,7 +14,7 @@ module.exports = {
       })
     }
 
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min
+    const randomNumber = getRandomInteger(min, max)
 
     await interaction.reply(
       `${bold(
