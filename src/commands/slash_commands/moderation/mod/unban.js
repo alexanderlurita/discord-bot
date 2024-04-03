@@ -66,7 +66,7 @@ module.exports = {
     }
 
     const userToUnban = bannedUsers[0].user
-    await interaction.guild.members.unban(userToUnban, { reason })
+    await interaction.guild.members.unban(userToUnban, reason)
 
     await interaction.reply(
       `${userMention(userToUnban.id)} ha sido desbaneado\nRazón: ${reason}`,

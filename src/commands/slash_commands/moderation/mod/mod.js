@@ -87,6 +87,25 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('softban')
+        .setDescription(
+          'Bans and then unbans a member to remove 7 days of messages',
+        )
+        .addUserOption((option) =>
+          option
+            .setName('member')
+            .setDescription('Member to softban')
+            .setRequired(true),
+        )
+        .addStringOption((option) =>
+          option
+            .setName('reason')
+            .setDescription('Reason for the softban')
+            .setRequired(false),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('timeout')
         .setDescription('Timeout a member')
         .addUserOption((option) =>
