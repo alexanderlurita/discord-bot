@@ -27,7 +27,7 @@ async function saveUserWarn({ guildId, userId, warnData }) {
 
     return userWarns
   } catch {
-    throw new Error('Error creating user warning')
+    throw new Error('Error saving user warning')
   }
 }
 
