@@ -14,14 +14,29 @@ const {
 } = require('../../../controllers/counter')
 const { errorMessages } = require('../../../constants/errorMessages')
 
-async function enableCounter({ guildId, channelId, interaction }) {
+async function enableCounter({ guildId, channel, interaction }) {
   try {
-    const savedCounter = await saveCounterChannel({ guildId, channelId })
+    const savedCounter = await saveCounterChannel({
+      guildId,
+      channelId: channel.id,
+    })
 
     if (savedCounter) {
-      await interaction.reply(
-        `El contador se ha habilitado en ${channelMention(channelId)}.`,
-      )
+      const embed = new EmbedBuilder()
+        .setColor(Colors.Green)
+        .setAuthor({
+          name: interaction.user.username,
+          iconURL: interaction.user.displayAvatarURL(),
+        })
+        .setDescription(
+          `Se ha habilitado el conteo en ${channelMention(
+            channel.id,
+          )}.\nEnvíe el número ${await getNextNumber(
+            channel,
+          )} allí para comenzar.`,
+        )
+
+      await interaction.reply({ embeds: [embed] })
     }
   } catch {
     await interaction.reply(
@@ -30,13 +45,19 @@ async function enableCounter({ guildId, channelId, interaction }) {
   }
 }
 
-async function disableCounter({ guildId, channelId, interaction }) {
+async function disableCounter({ guildId, channel, interaction }) {
   try {
-    await deleteChannelById({ guildId, channelId })
+    await deleteChannelById({ guildId, channelId: channel.id })
 
-    await interaction.reply(
-      `Contador desactivado en ${channelMention(channelId)}.`,
-    )
+    const embed = new EmbedBuilder()
+      .setColor(Colors.Green)
+      .setAuthor({
+        name: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL(),
+      })
+      .setDescription(`Conteo deshabilitado en ${channelMention(channel.id)}.`)
+
+    await interaction.reply({ embeds: [embed] })
   } catch {
     await interaction.reply(
       'Ocurrió un problema al intentar deshabilitar el contador.',
@@ -48,30 +69,32 @@ async function infoCounter({ guildId, channel, interaction }) {
   try {
     const counterChannels = await getCounterChannels({ guildId })
 
+    const embed = new EmbedBuilder()
+
     if (!counterChannels || !counterChannels.channelIds.includes(channel.id)) {
-      return await interaction.reply(
-        `El contador no está habilitado para ${channelMention(channel.id)}.`,
-      )
+      embed
+        .setColor(Colors.Red)
+        .setAuthor({
+          name: interaction.user.username,
+          iconURL: interaction.user.displayAvatarURL(),
+        })
+        .setDescription(
+          `El conteo no está habilitado para ${channelMention(channel.id)}.`,
+        )
+
+      return await interaction.reply({ embeds: [embed] })
     }
 
-    const messages = await channel.messages.fetch({ limit: 1 })
-    const lastMessage = messages.first()
-
-    let nextNumber
-    if (!lastMessage || isNaN(parseInt(lastMessage.content))) {
-      nextNumber = 1
-    } else {
-      nextNumber = parseInt(lastMessage.content) + 1
-    }
-
-    const embed = new EmbedBuilder().setColor(Colors.Green).addFields(
+    embed.setColor(Colors.Green).addFields(
       {
         name: 'Channel',
         value: channelMention(channel.id),
+        inline: true,
       },
       {
         name: 'Next number',
-        value: nextNumber.toString(),
+        value: String(await getNextNumber(channel)),
+        inline: true,
       },
     )
 
@@ -83,10 +106,22 @@ async function infoCounter({ guildId, channel, interaction }) {
   }
 }
 
+async function getNextNumber(channel) {
+  const messages = await channel.messages.fetch({ limit: 1 })
+  const lastMessage = messages.first()
+
+  if (!lastMessage || isNaN(parseInt(lastMessage.content))) {
+    return 1
+  } else {
+    return parseInt(lastMessage.content) + 1
+  }
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('counting')
     .setDescription('Manage the counter in a specific channel')
+    .setDMPermission(false)
     .addStringOption((option) =>
       option
         .setName('action')
@@ -129,9 +164,8 @@ module.exports = {
 
     await handler({
       guildId: interaction.guild.id,
-      channelId: channel.id,
-      interaction,
       channel,
+      interaction,
     })
   },
 }
