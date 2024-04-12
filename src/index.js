@@ -22,12 +22,19 @@ const client = new Client({
   partials: [User, Message, GuildMember, ThreadMember],
 })
 
-client.events = new Collection()
-client.commands = new Collection()
-client.subCommands = new Collection()
-client.cooldowns = new Collection()
-client.buttons = new Collection()
-client.menus = new Collection()
+const collectionNames = [
+  'events',
+  'commands',
+  'subCommands',
+  'cooldowns',
+  'buttons',
+  'menus',
+  'snipes',
+]
+
+collectionNames.forEach((name) => {
+  client[name] = new Collection()
+})
 
 handleErrors(client)
 loadEvents(client)

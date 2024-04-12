@@ -87,6 +87,13 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName('snipe')
+        .setDescription(
+          'Snipe the last deleted message from the current channel',
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName('softban')
         .setDescription(
           'Bans and then unbans a member to remove 7 days of messages',
