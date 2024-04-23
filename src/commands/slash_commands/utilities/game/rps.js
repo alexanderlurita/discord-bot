@@ -141,12 +141,6 @@ function getGameResult({
 
 module.exports = {
   subCommand: 'game.rps',
-
-  /**
-   *
-   * @param {ChatInputCommandInteraction} interaction
-   * @param {Client} client
-   */
   async execute(interaction, client) {
     const initiator = interaction.user
     const rival = interaction.options.getUser('user') ?? client.user
