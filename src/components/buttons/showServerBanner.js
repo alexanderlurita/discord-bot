@@ -1,19 +1,22 @@
 const { ActionRowBuilder } = require('discord.js')
-const { createLinkButton } = require('../../../../helpers/buttons')
 const {
   buildGuildBannerEmbed,
   getBannerURL,
-} = require('../../../../helpers/guildTools')
+} = require('../../helpers/guildTools')
+const { createLinkButton } = require('../../helpers/buttons')
 
 module.exports = {
-  subCommand: 'server.banner',
+  name: 'show-server-banner',
   async execute(interaction) {
     const { guild } = interaction
 
     const bannerURL = getBannerURL({ guild })
 
     if (!bannerURL) {
-      return await interaction.reply('El servidor no tiene un banner.')
+      return await interaction.reply({
+        content: 'El servidor no tiene un banner.',
+        ephemeral: true,
+      })
     }
 
     const embed = buildGuildBannerEmbed({ guild })
@@ -25,6 +28,10 @@ module.exports = {
 
     const row = new ActionRowBuilder().addComponents(linkButton)
 
-    await interaction.reply({ embeds: [embed], components: [row] })
+    await interaction.reply({
+      embeds: [embed],
+      components: [row],
+      ephemeral: true,
+    })
   },
 }
