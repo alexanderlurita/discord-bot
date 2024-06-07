@@ -4,6 +4,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('channel')
     .setDescription('Manage channel settings.')
+    .setDMPermission(false)
     .addSubcommand((subcommand) =>
       subcommand.setName('lock').setDescription('Lock the current channel'),
     )
