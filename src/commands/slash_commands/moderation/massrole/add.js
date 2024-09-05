@@ -11,6 +11,24 @@ module.exports = {
   async execute(interaction) {
     const role = interaction.options.getRole('role')
     const requiredRole = interaction.options.getRole('required_role')
+    const ignoredRole = interaction.options.getRole('ignored_role')
+
+    if (requiredRole && ignoredRole && requiredRole.id === ignoredRole.id) {
+      return await interaction.reply({
+        content: 'El rol requerido y rol a ignorar no puede ser el mismo.',
+        ephemeral: true,
+      })
+    }
+
+    if (
+      (requiredRole && role.id === requiredRole.id) ||
+      (ignoredRole && role.id === ignoredRole.id)
+    ) {
+      return await interaction.reply({
+        content: `El rol a agregar no puede ser el mismo que el rol requerido o el rol a ignorar.`,
+        ephemeral: true,
+      })
+    }
 
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
       return await interaction.reply({
@@ -62,6 +80,10 @@ module.exports = {
 
     for (const member of members.values()) {
       if (requiredRole && !member.roles.cache.has(requiredRole.id)) {
+        continue
+      }
+
+      if (ignoredRole && member.roles.cache.has(ignoredRole.id)) {
         continue
       }
 

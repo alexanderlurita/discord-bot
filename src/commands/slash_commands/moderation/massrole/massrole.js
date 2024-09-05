@@ -20,6 +20,12 @@ module.exports = {
             .setName('required_role')
             .setDescription('Role required for affected users')
             .setRequired(false),
+        )
+        .addRoleOption((option) =>
+          option
+            .setName('ignored_role')
+            .setDescription('Role to ignore when adding')
+            .setRequired(false),
         ),
     )
     .addSubcommand((subcommand) =>
