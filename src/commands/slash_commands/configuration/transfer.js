@@ -41,7 +41,6 @@ module.exports = {
       if (!sourceChannel || !destinationChannel) {
         return interaction.reply({
           content: 'No se pudo encontrar uno de los canales. Verifica los IDs.',
-          ephemeral: true,
         })
       }
 
@@ -52,14 +51,12 @@ module.exports = {
       ) {
         return interaction.reply({
           content: 'Ambos canales deben ser de tipo texto.',
-          ephemeral: true,
         })
       }
 
-      // Inform the user that the process is underway with ephemeral message
+      // Inform the user that the process is underway without ephemeral message
       await interaction.reply({
         content: `Transferencia iniciada. Transfiriendo ${amount} mensajes del canal ${sourceChannel.name} al canal ${destinationChannel.name}...`,
-        ephemeral: true,
       })
 
       console.log(`Transferencia iniciada con ${amount} mensajes.`)
@@ -195,13 +192,11 @@ module.exports = {
           `✅ **Mensajes transferidos**: ${transferCount} mensajes con archivos adjuntos.\n` +
           `🗑️ **Mensajes eliminados**: ${deletedCount} mensajes sin adjuntos.\n` +
           `⚠️ **Mensajes omitidos**: ${skippedSizeCount} mensajes con archivos que superaron los 25 MB de tamaño.`,
-        ephemeral: true,
       })
     } catch (error) {
       console.error(`Error durante la transferencia: ${error.message}`)
       await interaction.editReply({
         content: `Ocurrió un error durante la transferencia: ${error.message}`,
-        ephemeral: true,
       })
     }
   },
