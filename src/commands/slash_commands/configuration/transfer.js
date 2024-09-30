@@ -70,8 +70,9 @@ module.exports = {
         `Se han obtenido ${messages.size} mensajes del canal de origen.`,
       )
 
-      let transferCount = 0
-      let deletedCount = 0
+      let transferCount = 0 // Messages successfully transferred with attachments
+      let deletedCount = 0 // Messages deleted without attachments
+      let skippedSizeCount = 0 // Messages not sent due to attachment size
 
       // Convert to an array (without inversion)
       const messagesArray = Array.from(messages.values())
@@ -83,38 +84,49 @@ module.exports = {
         if (msg.attachments.size > 0) {
           // Process each attachment
           for (const [_, attachment] of msg.attachments) {
-            // Filter only images, videos, or GIFs
-            if (
-              attachment.contentType.startsWith('image/') ||
-              attachment.contentType.startsWith('video/') ||
-              attachment.contentType.includes('gif')
-            ) {
-              console.log(`Descargando archivo: ${attachment.name}`)
+            // Check if the attachment is below 25 MB
+            if (attachment.size <= 25 * 1024 * 1024) {
+              // 25 MB in bytes
+              // Filter only images, videos, or GIFs
+              if (
+                attachment.contentType.startsWith('image/') ||
+                attachment.contentType.startsWith('video/') ||
+                attachment.contentType.includes('gif')
+              ) {
+                console.log(`Descargando archivo: ${attachment.name}`)
 
-              try {
-                // Download the file using https
-                const filePath = `./temp_${attachment.name}`
-                const file = fs.createWriteStream(filePath)
+                try {
+                  // Download the file using https
+                  const filePath = `./temp_${attachment.name}`
+                  const file = fs.createWriteStream(filePath)
 
-                await new Promise((resolve, reject) => {
-                  https
-                    .get(attachment.url, (response) => {
-                      response.pipe(file)
-                      file.on('finish', () => {
-                        file.close(resolve)
+                  await new Promise((resolve, reject) => {
+                    https
+                      .get(attachment.url, (response) => {
+                        response.pipe(file)
+                        file.on('finish', () => {
+                          file.close(resolve)
+                        })
                       })
-                    })
-                    .on('error', (err) => {
-                      fs.unlink(filePath, () => {}) // Remove the file on error
-                      reject(err)
-                    })
-                })
+                      .on('error', (err) => {
+                        fs.unlink(filePath, () => {}) // Remove the file on error
+                        reject(err)
+                      })
+                  })
 
-                console.log(`Archivo guardado temporalmente: ${filePath}`)
-                filesToSend.push(filePath) // Add the file path to the files array
-              } catch (error) {
-                console.error(`Error manejando el archivo: ${error.message}`)
+                  console.log(`Archivo guardado temporalmente: ${filePath}`)
+                  filesToSend.push(filePath) // Add the file path to the files array
+                } catch (error) {
+                  console.error(`Error manejando el archivo: ${error.message}`)
+                }
               }
+            } else {
+              // File is larger than 25 MB, delete the message and count it
+              console.log(
+                `Archivo ${attachment.name} omitido por exceder el límite de 25 MB.`,
+              )
+              await msg.delete()
+              skippedSizeCount++
             }
           }
 
@@ -156,8 +168,17 @@ module.exports = {
         `Transferencia completada. Se transfirieron y eliminaron ${transferCount} mensajes con adjuntos.`,
       )
       console.log(`Eliminados ${deletedCount} mensajes sin adjuntos.`)
+      console.log(
+        `Omitidos ${skippedSizeCount} mensajes por superar el tamaño máximo de 25 MB.`,
+      )
+
+      // Separate the final reply message into three parts for clarity
       await interaction.editReply({
-        content: `Transferencia completada. Se transfirieron ${transferCount} mensajes con archivos adjuntos y se eliminaron ${deletedCount} mensajes sin adjuntos.`,
+        content:
+          `**Transferencia completada**:\n\n` +
+          `✅ **Mensajes transferidos**: ${transferCount} mensajes con archivos adjuntos.\n` +
+          `🗑️ **Mensajes eliminados**: ${deletedCount} mensajes sin adjuntos.\n` +
+          `⚠️ **Mensajes omitidos**: ${skippedSizeCount} mensajes con archivos que superaron los 25 MB de tamaño.`,
         ephemeral: true,
       })
     } catch (error) {
