@@ -16,11 +16,11 @@ module.exports = {
         option
           .setName('amount')
           .setDescription(
-            'Number of messages to transfer and check (between 1 and 100).',
+            'Number of messages to transfer and check (between 1 and 1000).',
           )
           .setRequired(true)
           .setMinValue(1) // Minimum value
-          .setMaxValue(100), // Maximum value
+          .setMaxValue(1000), // Maximum value
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
@@ -64,21 +64,37 @@ module.exports = {
 
       console.log(`Transferencia iniciada con ${amount} mensajes.`)
 
-      // Fetch messages from the source channel
-      const messages = await sourceChannel.messages.fetch({ limit: amount })
+      const fetchedMessages = []
+      let lastMessageId = null
+
+      // Fetch messages in batches of 100 until the desired amount is reached
+      while (fetchedMessages.length < amount) {
+        const remaining = amount - fetchedMessages.length
+        const fetchLimit = remaining > 100 ? 100 : remaining // Fetch only the remaining amount, max 100
+
+        // Fetch the messages, starting from the last message fetched in the previous iteration
+        const options = { limit: fetchLimit }
+        if (lastMessageId) options.before = lastMessageId
+
+        const messages = await sourceChannel.messages.fetch(options)
+
+        // Stop if no more messages are available
+        if (messages.size === 0) break
+
+        fetchedMessages.push(...messages.values())
+        lastMessageId = messages.last().id // Update the last message ID to the newest one fetched
+      }
+
       console.log(
-        `Se han obtenido ${messages.size} mensajes del canal de origen.`,
+        `Se han obtenido ${fetchedMessages.length} mensajes en total.`,
       )
 
       let transferCount = 0 // Messages successfully transferred with attachments
       let deletedCount = 0 // Messages deleted without attachments
       let skippedSizeCount = 0 // Messages not sent due to attachment size
 
-      // Convert to an array (without inversion)
-      const messagesArray = Array.from(messages.values())
-
-      // Iterate through messages to handle attachments and delete messages without attachments
-      for (const msg of messagesArray) {
+      // Iterate through fetched messages to handle attachments and delete messages without attachments
+      for (const msg of fetchedMessages) {
         const filesToSend = [] // Array to store files to send
 
         if (msg.attachments.size > 0) {
