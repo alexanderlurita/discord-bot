@@ -119,15 +119,12 @@ module.exports = {
     const quantity = interaction.options.getInteger('quantity')
     const user = interaction.options.getUser('user')
 
-    // Temporalemente
-    if (interaction.user.id !== '507910496717111306') {
-      if (
-        !interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)
-      ) {
-        return await interaction.editReply(
-          `${errorMessages.insufficientPermissions}\nRequiere: \`MANAGE_MESSAGES\``,
-        )
-      }
+    if (
+      !interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)
+    ) {
+      return await interaction.editReply(
+        `${errorMessages.insufficientPermissions}\nRequiere: \`MANAGE_MESSAGES\``,
+      )
     }
 
     if (
