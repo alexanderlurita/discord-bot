@@ -1,14 +1,23 @@
 const { EmbedBuilder, bold, roleMention, time } = require('discord.js')
 const { colors } = require('../constants/colors')
+const { formats } = require('../constants')
 
-function getAvatarURL({ user }) {
+function getAvatarURL({ user, format = 'png' }) {
+  if (!formats.includes(format)) {
+    format = 'webp'
+  }
+
   return user
     .displayAvatarURL({ dynamic: true, size: 2048 })
-    .replace('webp', 'png')
+    .replace('webp', format)
 }
 
-function getBannerURL({ user }) {
-  return user.bannerURL({ dynamic: true, size: 2048 })?.replace('webp', 'png')
+function getBannerURL({ user, format = 'png' }) {
+  if (!formats.includes(format)) {
+    format = 'webp'
+  }
+
+  return user.bannerURL({ dynamic: true, size: 2048 })?.replace('webp', format)
 }
 
 function buildUserAvatarEmbed({ user }) {
@@ -18,6 +27,14 @@ function buildUserAvatarEmbed({ user }) {
     .setColor(colors.warning)
     .setTitle(`Avatar de ${user.globalName ?? user.username}`)
     .setImage(avatarURL)
+    .addFields({
+      name: 'Formatos',
+      value: `[PNG](${avatarURL}) | [JPG](${avatarURL.replace(
+        'png',
+        'jpg',
+      )}) | [WEBP](${avatarURL.replace('png', 'webp')})`,
+    })
+    .setFooter({ text: 'Detrás de cada avatar, hay un mundo por descubrir.' })
 
   return embed
 }
@@ -29,6 +46,14 @@ function buildUserBannerEmbed({ user }) {
     .setColor(colors.warning)
     .setTitle(`Banner de ${user.globalName ?? user.username}`)
     .setImage(bannerURL)
+    .addFields({
+      name: 'Formatos',
+      value: `[PNG](${bannerURL}) | [JPG](${bannerURL.replace(
+        'png',
+        'jpg',
+      )}) | [WEBP](${bannerURL.replace('png', 'webp')})`,
+    })
+    .setFooter({ text: 'Un banner puede cambiar la perspectiva de un mundo.' })
 
   return embed
 }
@@ -67,12 +92,14 @@ function buildUserInfoEmbed({ member, client }) {
     .setThumbnail(avatarURL)
     .addFields(
       {
-        name: 'Información del Usuario',
+        name: 'Usuario',
         value:
           `${bold('ID:')} ${member.id}\n` +
-          `${bold('Usuario:')} ${member.user.username}\n` +
-          `${bold('Nombre:')} ${member.user.globalName ?? 'No tiene'}\n` +
-          `${bold('Nick:')} ${member.nickname ?? 'No tiene'}\n` +
+          `${bold('Nombre:')} ${
+            member.user.globalName
+              ? `${member.user.globalName} (${member.user.username})`
+              : member.user.username
+          }\n` +
           `${bold('Color:')} ${hexColor.toUpperCase()}\n` +
           `${bold('Bot:')} ${member.user.bot ? 'Si' : 'No'}`,
       },
